@@ -1,23 +1,20 @@
-import logo from "./logo.svg";
-import "./App.css";
+import Canvas from "./Canvas";
 
 const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{
+      backgroundColor: "#282c34",
+      minHeight: "100vh", // vh = 1% of the viewport (NOT THE PARENT ELEMENT)
+      width: "100%",
+    }}
+    >
+      <Canvas
+        width={1000}
+        draw={(ctx: CanvasRenderingContext2D) => {
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        }}
+      />
     </div>
   );
 };

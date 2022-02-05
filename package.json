@@ -115,7 +115,10 @@
       "react/require-default-props": "off",
       "no-nested-ternary": "off",
       "no-alert": "off",
-      "react/jsx-one-expression-per-line": "off"
+      "react/jsx-one-expression-per-line": "off",
+      "react/jsx-props-no-spreading": ["error", {
+        "html": "ignore"
+      }]
     }
   },
   "browserslist": {
