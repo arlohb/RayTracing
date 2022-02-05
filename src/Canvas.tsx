@@ -5,10 +5,8 @@ type CanvasProps = React.DetailedHTMLProps<
 React.CanvasHTMLAttributes<HTMLCanvasElement>, HTMLCanvasElement
 >;
 
-const Canvas = (props: CanvasProps & { draw: (ctx: CanvasRenderingContext2D) => void }) => {
-  // destructure all but native canvas props
-  const { draw } = props;
-
+const Canvas = ({ draw, ...nativeProps }
+: CanvasProps & { draw: (ctx: CanvasRenderingContext2D) => void }) => {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -22,7 +20,7 @@ const Canvas = (props: CanvasProps & { draw: (ctx: CanvasRenderingContext2D) => 
   return (
     <canvas
       ref={ref}
-      {...props}
+      {...nativeProps}
     />
   );
 };
