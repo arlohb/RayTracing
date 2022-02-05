@@ -19,6 +19,16 @@ const App = () => {
 
           const image = new Image(width, height, HexToPixel("#37aca6"));
 
+          for (let x = 0; x < width; x += 1) {
+            for (let y = 0; y < height; y += 1) {
+              image.data[x][y] = {
+                r: (x / width) * 255,
+                g: 127 - ((x * y) / (width * height)),
+                b: (y / width) * 255,
+              };
+            }
+          }
+
           DrawImageToCanvas(ctx, image);
         }}
       />

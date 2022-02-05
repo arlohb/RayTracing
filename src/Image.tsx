@@ -25,9 +25,8 @@ class Image {
     this.width = width;
     this.height = height;
 
-    this.data = Array<Pixel[]>(width).fill( // create an array of length width
-      Array<Pixel>(height).fill(fillValue), // filled with arrays of length height
-    );
+    // cannot use fill as that just sets references to the same array
+    this.data = Array.from({ length: width }, () => (Array<Pixel>(height).fill(fillValue)));
   }
 }
 
