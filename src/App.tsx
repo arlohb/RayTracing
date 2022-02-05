@@ -22,9 +22,9 @@ const App = () => {
           for (let x = 0; x < width; x += 1) {
             for (let y = 0; y < height; y += 1) {
               image.data[x][y] = {
-                r: (x / width) * 255,
-                g: 127 - ((x * y) / (width * height)),
-                b: (y / width) * 255,
+                r: Math.random() * 255,
+                g: Math.random() * 255,
+                b: Math.random() * 255,
               };
             }
           }
