@@ -6,7 +6,9 @@ React.CanvasHTMLAttributes<HTMLCanvasElement>, HTMLCanvasElement
 >;
 
 const Canvas = ({ draw, ...nativeProps }
-: CanvasProps & { draw: (ctx: CanvasRenderingContext2D) => void }) => {
+: CanvasProps & {
+  draw: (ctx: CanvasRenderingContext2D) => void,
+}) => {
   const ref = useRef<HTMLCanvasElement>(null);
 
   const reDraw = useCallback(() => {
@@ -25,6 +27,9 @@ const Canvas = ({ draw, ...nativeProps }
     <canvas
       ref={ref}
       onClick={(() => reDraw())}
+      style={{
+        userSelect: "none", // allows the user to double click without selecting everything
+      }}
       {...nativeProps}
     />
   );

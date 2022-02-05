@@ -1,7 +1,15 @@
+import { useCallback, useState } from "react";
 import Canvas from "./Canvas";
 import Image, { HexToPixel, DrawImageToCanvas } from "./Image";
+import PerformanceMetricsText, { PerformanceMetrics } from "./PerformanceMetrics";
 
 const App = () => {
+  const [metrics, setMetrics] = useState<PerformanceMetrics>({
+    total: 0,
+    render: 0,
+    drawToCanvas: 0,
+  });
+
   return (
     <div style={{
       backgroundColor: "#282c34",
@@ -12,12 +20,21 @@ const App = () => {
       <Canvas
         width={500}
         height={500}
-        draw={(ctx: CanvasRenderingContext2D): void => {
-          ctx.imageSmoothingEnabled = false;
+        // wrapped in useCallback so it doesn't rerun when state changes
+        draw={useCallback((ctx: CanvasRenderingContext2D): void => {
+          const timer: PerformanceMetrics = {
+            total: 0,
+            render: 0,
+            drawToCanvas: 0,
+          };
+
+          timer.total = performance.now();
 
           const { width, height } = ctx.canvas;
 
           const image = new Image(width, height, HexToPixel("#37aca6"));
+
+          timer.render = performance.now();
 
           for (let x = 0; x < width; x += 1) {
             for (let y = 0; y < height; y += 1) {
@@ -29,9 +46,18 @@ const App = () => {
             }
           }
 
+          timer.render = performance.now() - timer.render;
+          timer.drawToCanvas = performance.now();
+
           DrawImageToCanvas(ctx, image);
-        }}
+
+          timer.drawToCanvas = performance.now() - timer.drawToCanvas;
+          timer.total = performance.now() - timer.total;
+
+          setMetrics(timer);
+        }, [])}
       />
+      <PerformanceMetricsText metrics={metrics} />
     </div>
   );
 };
