@@ -3,30 +3,120 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.4.0",
-    "@types/node": "^16.11.22",
-    "@types/react": "^17.0.39",
-    "@types/react-dom": "^17.0.11",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
     "typescript": "^4.5.5",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "@types/node": "^16.11.22",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.10.2",
+    "@typescript-eslint/parser": "^5.10.2",
+    "eslint": "^8.8.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^16.1.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true
+    },
     "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+      "plugin:react/recommended",
+      "airbnb",
+      "airbnb-typescript",
+      "airbnb/hooks",
+      "plugin:@typescript-eslint/recommended-requiring-type-checking",
+      "plugin:react/jsx-runtime"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "ecmaVersion": 12,
+      "sourceType": "module",
+      "tsconfigRootDir": ".",
+      "project": [
+        "./tsconfig.json"
+      ]
+    },
+    "plugins": [
+      "react",
+      "@typescript-eslint"
+    ],
+    "ignorePatterns": "./node_modules/*",
+    "rules": {
+      "quotes": [
+        "error",
+        "double"
+      ],
+      "@typescript-eslint/quotes": [
+        "error",
+        "double"
+      ],
+      "linebreak-style": "off",
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [
+            ".jsx",
+            ".tsx"
+          ]
+        }
+      ],
+      "react/prop-types": "off",
+      "radix": "off",
+      "object-curly-newline": "off",
+      "arrow-body-style": "off",
+      "no-console": "off",
+      "no-use-before-define": "off",
+      "@typescript-eslint/no-use-before-define": [
+        "error"
+      ],
+      "react/no-arrow-function-lifecycle": "off",
+      "react/no-invalid-html-attribute": "off",
+      "react/no-unused-class-component-methods": "off",
+      "react/function-component-definition": [
+        "error",
+        {
+          "namedComponents": "arrow-function",
+          "unnamedComponents": "arrow-function"
+        }
+      ],
+      "react/no-unstable-nested-components": [
+        "error",
+        {
+          "allowAsProps": true
+        }
+      ],
+      "semi": "off",
+      "@typescript-eslint/semi": [
+        "error",
+        "always"
+      ],
+      "import/extensions": [
+        "error",
+        "never"
+      ],
+      "import/no-unresolved": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "react/jsx-boolean-value": "off",
+      "import/no-cycle": "off",
+      "react/require-default-props": "off",
+      "no-nested-ternary": "off",
+      "no-alert": "off",
+      "react/jsx-one-expression-per-line": "off"
+    }
   },
   "browserslist": {
     "production": [
