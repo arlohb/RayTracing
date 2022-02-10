@@ -20,12 +20,14 @@ class Vector3 {
   normalize(): Vector3 {
     const vec = this;
 
-    const length = vec.dot(this);
-    if (length < 0) {
-      const inverseLength = 1 / Math.sqrt(length);
-      vec.x *= inverseLength;
-      vec.y *= inverseLength;
-      vec.z *= inverseLength;
+    const lengthSquared = vec.dot(this);
+    if (lengthSquared > 0) {
+      const inverseLength = 1 / Math.sqrt(lengthSquared);
+      return new Vector3(
+        this.x * inverseLength,
+        this.y * inverseLength,
+        this.z * inverseLength,
+      );
     }
 
     return vec;
@@ -61,6 +63,14 @@ class Vector3 {
       this.y * r,
       this.z * r,
     );
+  }
+
+  toString(): string {
+    return `x: ${this.x}, y: ${this.y}, z: ${this.z}`;
+  }
+
+  toFixed(decimalPlaces: number): string {
+    return `x: ${this.x.toFixed(decimalPlaces)}, y: ${this.y.toFixed(decimalPlaces)}, z: ${this.z.toFixed(decimalPlaces)}`;
   }
 }
 

@@ -116,9 +116,12 @@
       "no-nested-ternary": "off",
       "no-alert": "off",
       "react/jsx-one-expression-per-line": "off",
-      "react/jsx-props-no-spreading": ["error", {
-        "html": "ignore"
-      }],
+      "react/jsx-props-no-spreading": [
+        "error",
+        {
+          "html": "ignore"
+        }
+      ],
       "@typescript-eslint/lines-between-class-members": "off"
     }
   },

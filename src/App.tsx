@@ -1,7 +1,14 @@
 import { useCallback, useState } from "react";
 import Canvas from "./Canvas";
 import Image, { HexToPixel, DrawImageToCanvas } from "./Image";
-import PerformanceMetricsText, { PerformanceMetrics } from "./PerformanceMetrics";
+import Data from "./Data";
+import MathsTest from "./MathsTest";
+
+type PerformanceMetrics = {
+  total: number,
+  render: number,
+  drawToCanvas: number,
+};
 
 const App = () => {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
@@ -15,9 +22,14 @@ const App = () => {
       backgroundColor: "#282c34",
       minHeight: "100vh", // vh = 1% of the viewport, not the parent element like % does
       width: "100%",
+      display: "flex",
+      flexDirection: "row",
     }}
     >
       <Canvas
+        style={{
+          height: 500,
+        }}
         width={500}
         height={500}
         // wrapped in useCallback so it doesn't rerun when state changes
@@ -57,7 +69,19 @@ const App = () => {
           setMetrics(timer);
         }, [])}
       />
-      <PerformanceMetricsText metrics={metrics} />
+      <div>
+        <Data
+          fixed={1}
+          units="ms"
+          title="Performance"
+          data={{
+            Total: metrics.total,
+            Render: metrics.render,
+            DrawToCanvas: metrics.drawToCanvas,
+          }}
+        />
+        <MathsTest />
+      </div>
     </div>
   );
 };
