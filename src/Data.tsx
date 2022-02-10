@@ -20,6 +20,19 @@ const Data = ({ data, fixed, units, title }: {
       {title ? <p style={{ color: "#FFFFFF", fontWeight: "bolder" }}>{title}</p> : null}
       {Object.entries(data).map(([key, value]) => {
         const paddedKey = padding ? key.padEnd(padding, "\u00a0") : key;
+        let separator;
+        let realValue: ToStringGeneric;
+
+        if (!Array.isArray(value)) {
+          realValue = value;
+          separator = "\u00a0\u00a0";
+        } else {
+          [realValue] = value;
+          separator = value[1] ? "✔" : "❌";
+        }
+
+        const roundedValue = fixed !== undefined ? realValue.toFixed(fixed) : realValue.toString();
+
         return (
           <p
             style={{
@@ -30,11 +43,7 @@ const Data = ({ data, fixed, units, title }: {
             }}
             key={key}
           >
-            {
-              (!Array.isArray(value))
-                ? `${paddedKey} \u00a0\u00a0${fixed !== undefined ? value.toFixed(fixed) : value.toString()} ${units ?? ""}`
-                : `${paddedKey} ${value[1] ? "✔" : "❌"} ${fixed !== undefined ? value[0].toFixed(fixed) : value[0].toString()}`
-            }
+            {`${paddedKey} ${separator} ${roundedValue} ${units ?? ""}`}
           </p>
         );
       })}
