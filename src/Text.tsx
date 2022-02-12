@@ -1,22 +1,35 @@
-const Text = ({ children, fontSize, fontWeight, style }: {
+const Text = ({ children, style, textStyle }: {
   children: string,
-  fontSize?: number,
-  fontWeight?: number,
   style?: React.CSSProperties,
+  textStyle?: React.CSSProperties
 }) => {
   return (
-    <p
+    <div
       style={{
-        fontSize: fontSize ?? 16,
-        fontWeight: fontWeight ?? 300,
-        color: "#FFFFFF",
         margin: 0,
         padding: 0,
         ...style,
       }}
     >
-      {children}
-    </p>
+      {children.split("\n").map((text, index) => (
+        <p
+          // eslint-disable-next-line react/no-array-index-key
+          key={`${text} ${index}`}
+          style={{
+            fontSize: 16,
+            fontWeight: 300,
+            margin: 0,
+            padding: 0,
+            color: "#FFFFFF",
+            textAlign: "left",
+            ...textStyle,
+          }}
+        >
+          {text}
+          <br />
+        </p>
+      ))}
+    </div>
   );
 };
 

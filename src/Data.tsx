@@ -11,24 +11,23 @@ const GridRow = ({ left, right, testPassed }: {
   testPassed?: boolean,
 }) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-      }}
-    >
-      <Text style={{ flex: 1 }}>
-        {left}
-      </Text>
+    <tr>
+      <td style={{ width: 250 }}>
+        <Text>
+          {left}
+        </Text>
+      </td>
 
-      <div style={{ flex: 0.12 }}>
+      <td style={{ width: 20 }}>
         <Text>{testPassed === undefined ? "" : (testPassed ? "✅" : "❌")}</Text>
-      </div>
+      </td>
 
-      <Text style={{ flex: 1.7 }}>
-        {right}
-      </Text>
-    </div>
+      <td>
+        <Text style={{ paddingLeft: 10 }}>
+          {right}
+        </Text>
+      </td>
+    </tr>
   );
 };
 
@@ -44,26 +43,30 @@ const Data = ({ data, decimalPlaces, units, title }: {
       marginLeft: 50,
     }}
     >
-      <Text fontWeight={600}>
+      <Text style={{ marginBottom: 12 }} textStyle={{ fontWeight: 600 }}>
         {title}
       </Text>
 
-      {Object.entries(data).map(([key, value]) => {
-        const realValue = Array.isArray(value) ? value[0] : value;
+      <table style={{ tableLayout: "fixed" }}>
+        <tbody>
+          {Object.entries(data).map(([key, value]) => {
+            const realValue = Array.isArray(value) ? value[0] : value;
 
-        const roundedValue = decimalPlaces !== undefined
-          ? realValue.toFixed(decimalPlaces)
-          : realValue.toString();
+            const roundedValue = decimalPlaces !== undefined
+              ? realValue.toFixed(decimalPlaces)
+              : realValue.toString();
 
-        return (
-          <GridRow
-            key={key}
-            left={key}
-            right={`${roundedValue} ${units ?? ""}`}
-            testPassed={Array.isArray(value) ? value[1] : undefined}
-          />
-        );
-      })}
+            return (
+              <GridRow
+                key={key}
+                left={key}
+                right={`${roundedValue} ${units ?? ""}`}
+                testPassed={Array.isArray(value) ? value[1] : undefined}
+              />
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
