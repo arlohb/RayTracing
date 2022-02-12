@@ -1,7 +1,11 @@
+import Matrix33 from "./Matrix33";
+
 class Vector3 {
   static readonly unitX = new Vector3(1, 0, 0);
   static readonly unitY = new Vector3(0, 1, 0);
   static readonly unitZ = new Vector3(0, 0, 1);
+
+  static readonly epsilon = 0.0000001;
 
   x: number;
   y: number;
@@ -79,9 +83,17 @@ class Vector3 {
 
   equals(vec: Vector3): boolean {
     return (
-      this.x === vec.x
-      && this.y === vec.y
-      && this.z === vec.z
+      Math.abs(this.x - vec.x) < Vector3.epsilon
+      && Math.abs(this.y - vec.y) < Vector3.epsilon
+      && Math.abs(this.z - vec.z) < Vector3.epsilon
+    );
+  }
+
+  transform(mat: Matrix33): Vector3 {
+    return new Vector3(
+      this.x * mat.values[0][0] + this.y * mat.values[1][0] + this.z * mat.values[2][0],
+      this.x * mat.values[0][1] + this.y * mat.values[1][1] + this.z * mat.values[2][1],
+      this.x * mat.values[0][2] + this.y * mat.values[1][2] + this.z * mat.values[2][2],
     );
   }
 }
