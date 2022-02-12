@@ -2,7 +2,7 @@ import Text from "./Text";
 
 type ToStringGeneric = {
   toString: () => string,
-  toFixed: (decimalPlaces: number) => string,
+  toFixed?: (decimalPlaces: number) => string,
 };
 
 const GridRow = ({ left, right, testPassed }: {
@@ -53,7 +53,7 @@ const Data = ({ data, decimalPlaces, units, title }: {
             const realValue = Array.isArray(value) ? value[0] : value;
 
             const roundedValue = decimalPlaces !== undefined
-              ? realValue.toFixed(decimalPlaces)
+              ? (realValue.toFixed ? realValue.toFixed(decimalPlaces) : realValue.toString())
               : realValue.toString();
 
             return (
