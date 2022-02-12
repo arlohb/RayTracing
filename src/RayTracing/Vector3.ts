@@ -1,9 +1,7 @@
 class Vector3 {
-  static unit = {
-    x: new Vector3(1, 0, 0),
-    y: new Vector3(0, 1, 0),
-    z: new Vector3(0, 0, 1),
-  };
+  static readonly unitX = new Vector3(1, 0, 0);
+  static readonly unitY = new Vector3(0, 1, 0);
+  static readonly unitZ = new Vector3(0, 0, 1);
 
   x: number;
   y: number;
@@ -80,10 +78,10 @@ class Vector3 {
   }
 
   equals(vec: Vector3): boolean {
-    return !(
-      this.x !== vec.x
-      || this.y !== vec.y
-      || this.z !== vec.z
+    return (
+      this.x === vec.x
+      && this.y === vec.y
+      && this.z === vec.z
     );
   }
 }
