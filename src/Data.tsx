@@ -12,7 +12,7 @@ const GridRow = ({ left, right, testPassed }: {
 }) => {
   return (
     <tr>
-      <td style={{ width: 250 }}>
+      <td style={{ width: 350 }}>
         <Text>
           {left}
         </Text>
