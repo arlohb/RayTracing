@@ -3,6 +3,7 @@ import Text from "./Text";
 type ToStringGeneric = {
   toString: () => string,
   toFixed?: (decimalPlaces: number) => string,
+  equals?: (arg: any) => boolean,
 };
 
 const GridRow = ({ left, right, testPassed }: {
@@ -32,7 +33,7 @@ const GridRow = ({ left, right, testPassed }: {
 };
 
 const Data = ({ data, decimalPlaces, units, title }: {
-  data: { [key: string]: ToStringGeneric | [ToStringGeneric, boolean] },
+  data: { [key: string]: ToStringGeneric | [ToStringGeneric, ToStringGeneric] },
   decimalPlaces?: number,
   units?: string,
   title: string,
@@ -56,12 +57,16 @@ const Data = ({ data, decimalPlaces, units, title }: {
               ? (realValue.toFixed ? realValue.toFixed(decimalPlaces) : realValue.toString())
               : realValue.toString();
 
+            const testPassed: boolean | undefined = Array.isArray(value)
+              ? value[0].equals ? value[0].equals(value[1]) : value[0] === value[1]
+              : undefined;
+
             return (
               <GridRow
                 key={key}
                 left={key}
                 right={`${roundedValue} ${units ?? ""}`}
-                testPassed={Array.isArray(value) ? value[1] : undefined}
+                testPassed={testPassed}
               />
             );
           })}
