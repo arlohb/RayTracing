@@ -11,7 +11,7 @@ const MathsTest = () => {
   return (
     <>
       <Data
-        fixed={2}
+        decimalPlaces={2}
         title="Vectors Test"
         data={{
           Point,
@@ -22,7 +22,7 @@ const MathsTest = () => {
         }}
       />
       <Data
-        fixed={2}
+        decimalPlaces={2}
         title="Matrices Test"
         data={{
           Mat,

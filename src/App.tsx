@@ -71,7 +71,7 @@ const App = () => {
       />
       <div>
         <Data
-          fixed={1}
+          decimalPlaces={1}
           units="ms"
           title="Performance"
           data={{
