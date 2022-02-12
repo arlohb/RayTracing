@@ -1,4 +1,10 @@
 class Vector3 {
+  static unit = {
+    x: new Vector3(1, 0, 0),
+    y: new Vector3(0, 1, 0),
+    z: new Vector3(0, 0, 1),
+  };
+
   x: number;
   y: number;
   z: number;
@@ -71,6 +77,14 @@ class Vector3 {
 
   toFixed(decimalPlaces: number): string {
     return `x: ${this.x.toFixed(decimalPlaces)}, y: ${this.y.toFixed(decimalPlaces)}, z: ${this.z.toFixed(decimalPlaces)}`;
+  }
+
+  equals(vec: Vector3): boolean {
+    return !(
+      this.x !== vec.x
+      || this.y !== vec.y
+      || this.z !== vec.z
+    );
   }
 }
 
