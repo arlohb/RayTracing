@@ -1,4 +1,4 @@
-import Matrix33 from "./Matrix33";
+import Matrix44 from "./Matrix44";
 
 class Vector3 {
   static readonly unitX = new Vector3(1, 0, 0);
@@ -89,7 +89,21 @@ class Vector3 {
     );
   }
 
-  transform(mat: Matrix33): Vector3 {
+  transformPoint(mat: Matrix44): Vector3 {
+    // w could also be computed here with this:
+    // const w = this.x * mat.values[0][3] + this.y * mat.values[1][3] * mat.values[2][3] + mat.values[3][3];
+    // and then each coordinate would be divided by w, to keep w at 1
+    // however, w should only be changed by the above formula when doing perspective projection matrices,
+    // which are used in rasterization and NOT ray tracing
+
+    return new Vector3(
+      this.x * mat.values[0][0] + this.y * mat.values[1][0] + this.z * mat.values[2][0] + mat.values[3][0],
+      this.x * mat.values[0][1] + this.y * mat.values[1][1] + this.z * mat.values[2][1] + mat.values[3][1],
+      this.x * mat.values[0][2] + this.y * mat.values[1][2] + this.z * mat.values[2][2] + mat.values[3][2],
+    );
+  }
+
+  transformVector(mat: Matrix44): Vector3 {
     return new Vector3(
       this.x * mat.values[0][0] + this.y * mat.values[1][0] + this.z * mat.values[2][0],
       this.x * mat.values[0][1] + this.y * mat.values[1][1] + this.z * mat.values[2][1],

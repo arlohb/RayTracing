@@ -1,13 +1,12 @@
 import Vector3 from "./RayTracing/Vector3";
-import Matrix33 from "./RayTracing/Matrix33";
+import Matrix44 from "./RayTracing/Matrix44";
 import Data from "./Data";
 
 const MathsTest = () => {
   const PointA = new Vector3(2, -7, 4);
   const PointB = new Vector3(-3, 9, -1);
 
-  const MatA = new Matrix33([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-  const MatB = new Matrix33([[-3, 2, 1], [-8, 4, -1], [2, 5, 2]]);
+  const MatT = Matrix44.createScale(3).mul(Matrix44.createTranslation(1, 2, 3));
 
   return (
     <>
@@ -30,23 +29,20 @@ const MathsTest = () => {
       />
       <Data
         decimalPlaces={2}
-        title="Transformations Test"
+        title="Matrices Test"
         data={{
-          "A by Matrix A": [PointA.transform(MatA), new Vector3(2, 1, 0)],
-          "A by identity": [PointA.transform(Matrix33.identity), PointA],
-          "Scale A by 3": [PointA.transform(Matrix33.createScale(3)), PointA.mul(3)],
-          "Rotate unit X pi/2 clockwise about Z axis": [Vector3.unitX.transform(Matrix33.createRotation("z", Math.PI / 2)), Vector3.unitY],
+          "T = scale by 3 followed by\ntranslation by (1, 2, 3)": [MatT, new Matrix44([[3, 0, 0, 0], [0, 3, 0, 0], [0, 0, 3, 0], [1, 2, 3, 1]])],
         }}
       />
       <Data
         decimalPlaces={2}
-        title="Matrices Test"
+        title="Transformations Test"
         data={{
-          "Matrix A": MatA,
-          "Matrix B": MatB,
-          "A * B": [MatA.mul(MatB), new Matrix33([[-13, 25, 5], [-40, 58, 11], [-67, 91, 17]])],
-          "B * A": [MatB.mul(MatA), new Matrix33([[12, 12, 12], [1, -4, -9], [36, 45, 54]])],
-          "Scale by 3": [Matrix33.createScale(3), new Matrix33([[3, 0, 0], [0, 3, 0], [0, 0, 3]])],
+          "A by identity": [PointA.transformPoint(Matrix44.identity), PointA],
+          "Scale A by 3": [PointA.transformPoint(Matrix44.createScale(3)), PointA.mul(3)],
+          "Rotate unit X pi/2 clockwise about Z axis": [Vector3.unitX.transformPoint(Matrix44.createRotation("z", Math.PI / 2)), Vector3.unitY],
+          "Unit X (as a vector) by matrix T": [Vector3.unitX.transformVector(MatT), new Vector3(3, 0, 0)],
+          "Unit X (as a point) by matrix T": [Vector3.unitX.transformPoint(MatT), new Vector3(4, 2, 3)],
         }}
       />
     </>
