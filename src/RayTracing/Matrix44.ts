@@ -57,7 +57,11 @@ class Matrix44 {
   values: Matrix44Values;
 
   constructor(values?: Matrix44Values) {
-    this.values = values ?? [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+    this.values = values ?? Matrix44.identity.copy().values;
+  }
+
+  copy(): Matrix44 {
+    return new Matrix44(this.values.map((arr) => ([...arr])) as Matrix44Values);
   }
 
   mul(mat: Matrix44): Matrix44 {
@@ -142,7 +146,7 @@ class Matrix44 {
   // We do inverse of a 3x3 in upper 6th further maths
   // https://gist.github.com/husa/5652439
   inverse(): Matrix44 {
-    const A: Matrix44Values = this.values.map((arr) => ([...arr])) as Matrix44Values;
+    const A: Matrix44Values = this.copy().values;
 
     let temp;
     const N = this.values.length;
