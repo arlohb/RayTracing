@@ -137,6 +137,60 @@ class Matrix44 {
 
     return newMat;
   }
+
+  // I do not currently understand this. I'd love to at some point though
+  // We do inverse of a 3x3 in upper 6th further maths
+  // https://gist.github.com/husa/5652439
+  inverse(): Matrix44 {
+    const A: Matrix44Values = this.values.map((arr) => ([...arr])) as Matrix44Values;
+
+    let temp;
+    const N = this.values.length;
+    const E = [];
+
+    for (let i = 0; i < N; i += 1) { E[i] = [0]; }
+
+    for (let i = 0; i < N; i += 1) {
+      for (let j = 0; j < N; j += 1) {
+        E[i][j] = 0;
+        if (i === j) E[i][j] = 1;
+      }
+    }
+
+    for (let k = 0; k < N; k += 1) {
+      temp = A[k][k];
+
+      for (let j = 0; j < N; j += 1) {
+        A[k][j] /= temp;
+        E[k][j] /= temp;
+      }
+
+      for (let i = k + 1; i < N; i += 1) {
+        temp = A[i][k];
+
+        for (let j = 0; j < N; j += 1) {
+          A[i][j] -= A[k][j] * temp;
+          E[i][j] -= E[k][j] * temp;
+        }
+      }
+    }
+
+    for (let k = N - 1; k > 0; k -= 1) {
+      for (let i = k - 1; i >= 0; i -= 1) {
+        temp = A[i][k];
+
+        for (let j = 0; j < N; j += 1) {
+          A[i][j] -= A[k][j] * temp;
+          E[i][j] -= E[k][j] * temp;
+        }
+      }
+    }
+
+    for (let i = 0; i < N; i += 1) {
+      for (let j = 0; j < N; j += 1) A[i][j] = E[i][j];
+    }
+    return new Matrix44(A);
+  }
 }
 
 export default Matrix44;
