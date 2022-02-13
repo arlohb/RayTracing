@@ -32,6 +32,7 @@ const MathsTest = () => {
         title="Matrices Test"
         data={{
           "T = scale by 3 followed by\ntranslation by (1, 2, 3)": [MatT, new Matrix44([[3, 0, 0, 0], [0, 3, 0, 0], [0, 0, 3, 0], [1, 2, 3, 1]])],
+          "T transposed": [MatT.transpose(), new Matrix44([[3, 0, 0, 1], [0, 3, 0, 2], [0, 0, 3, 3], [0, 0, 0, 1]])],
         }}
       />
       <Data

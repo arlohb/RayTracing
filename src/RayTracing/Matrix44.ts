@@ -125,6 +125,18 @@ class Matrix44 {
 
     return str;
   }
+
+  transpose(): Matrix44 {
+    const newMat = new Matrix44();
+
+    for (let i = 0; i < 4; i += 1) {
+      for (let j = 0; j < 4; j += 1) {
+        newMat.values[i][j] = this.values[j][i];
+      }
+    }
+
+    return newMat;
+  }
 }
 
 export default Matrix44;
