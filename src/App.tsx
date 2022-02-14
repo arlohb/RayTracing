@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Canvas from "./Canvas";
 import { DrawImageToCanvas } from "./Image";
 import Data from "./Data";
@@ -6,6 +6,7 @@ import MathsTest from "./MathsTest";
 import RayTracer, { RayTracerOptions } from "./RayTracing/RayTracer";
 import Vector3 from "./RayTracing/Vector3";
 import Sphere from "./RayTracing/Sphere";
+import { SphericalToCartesian } from "./RayTracing/SphericalCoords";
 
 type PerformanceMetrics = {
   total: number,
@@ -14,8 +15,26 @@ type PerformanceMetrics = {
 };
 
 const App = () => {
+  const [theta, setTheta] = useState(0);
+  const [phi, setPhi] = useState(-0.6);
+  const [orbitDistance, setOrbitDistance] = useState(10);
+  const [position, setPosition] = useState<Vector3>(new Vector3(5.77, 5.77, 5.77));
+
+  useEffect(() => {
+    setPosition(SphericalToCartesian(phi, theta).normalize().mul(orbitDistance));
+  }, [theta, phi, orbitDistance]);
+
+  const spin = useCallback(() => {
+    setTheta((t) => t + 0.04);
+    setTimeout(spin, 10);
+  }, [setTheta]);
+
+  useEffect(() => {
+    spin();
+  }, [spin]);
+
   const [rayTracerOptions] = useState<RayTracerOptions>({
-    from: new Vector3(7, 10, 10),
+    from: position,
     to: new Vector3(0, 0, 0),
     fov: 90,
     width: 400,
@@ -23,12 +42,12 @@ const App = () => {
     scene: [
       new Sphere(new Vector3(0, 0, 0), 2),
       new Sphere(new Vector3(5, 0, 0), 1),
-      new Sphere(new Vector3(0, 5, 0), 1),
       new Sphere(new Vector3(0, 0, 5), 1),
+      new Sphere(new Vector3(-1, 0, 2), 1),
     ],
   });
 
-  const rayTracer = useMemo(() => new RayTracer(rayTracerOptions), [rayTracerOptions]);
+  const rayTracer = useMemo(() => new RayTracer({ ...rayTracerOptions, from: position }), [rayTracerOptions, position]);
 
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     total: 0,
@@ -51,6 +70,28 @@ const App = () => {
         }}
         width={rayTracerOptions.width}
         height={rayTracerOptions.height}
+        onKeyPressCapture={({ key }) => {
+          const speed = 0.2;
+          const scrollSpeed = 1;
+
+          if (key === "w") {
+            setOrbitDistance(orbitDistance - scrollSpeed);
+            return;
+          } if (key === "s") {
+            setOrbitDistance(orbitDistance + scrollSpeed);
+            return;
+          }
+
+          if (key === "d") {
+            setTheta(theta + speed);
+          } else if (key === "a") {
+            setTheta(theta - speed);
+          } else if (key === "e") {
+            setPhi(phi + speed);
+          } else if (key === "q") {
+            setPhi(phi - speed);
+          }
+        }}
         // wrapped in useCallback so it doesn't rerun when state changes
         draw={useCallback((ctx: CanvasRenderingContext2D): void => {
           const timer: PerformanceMetrics = {

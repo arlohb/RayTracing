@@ -94,10 +94,6 @@ class RayTracer {
           if (angle < minAngle) minAngle = angle;
           if (angle > maxAngle) maxAngle = angle;
 
-          if (x === 400 && y === 300) {
-            console.log({ forward, normal, angle });
-          }
-
           const brightness = 1 - (angle / Math.PI);
 
           image.data[x][y] = {
@@ -114,8 +110,6 @@ class RayTracer {
         }
       }
     }
-
-    console.log({ minAngle, maxAngle });
 
     return image;
   }

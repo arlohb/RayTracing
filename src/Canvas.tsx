@@ -25,6 +25,7 @@ const Canvas = ({ draw, ...nativeProps }
 
   return (
     <canvas
+      tabIndex={0}
       ref={ref}
       onClick={(() => reDraw())}
       style={{

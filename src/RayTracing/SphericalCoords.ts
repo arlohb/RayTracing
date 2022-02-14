@@ -5,8 +5,8 @@ const clamp = (num: number, min: number, max: number): number => Math.min(Math.m
 const SphericalToCartesian = (theta: number, phi: number): Vector3 => {
   return new Vector3(
     Math.cos(phi) * Math.sin(theta),
-    Math.sin(phi) * Math.sin(theta),
     Math.cos(theta),
+    Math.sin(phi) * Math.sin(theta),
   );
 };
 
