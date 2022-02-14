@@ -5,6 +5,7 @@ import Data from "./Data";
 import MathsTest from "./MathsTest";
 import RayTracer, { RayTracerOptions } from "./RayTracing/RayTracer";
 import Vector3 from "./RayTracing/Vector3";
+import Sphere from "./RayTracing/Sphere";
 
 type PerformanceMetrics = {
   total: number,
@@ -14,11 +15,17 @@ type PerformanceMetrics = {
 
 const App = () => {
   const [rayTracerOptions] = useState<RayTracerOptions>({
-    from: new Vector3(0, 0, 8),
+    from: new Vector3(7, 10, 10),
     to: new Vector3(0, 0, 0),
     fov: 90,
     width: 400,
-    height: 250,
+    height: 300,
+    scene: [
+      new Sphere(new Vector3(0, 0, 0), 2),
+      new Sphere(new Vector3(5, 0, 0), 1),
+      new Sphere(new Vector3(0, 5, 0), 1),
+      new Sphere(new Vector3(0, 0, 5), 1),
+    ],
   });
 
   const rayTracer = useMemo(() => new RayTracer(rayTracerOptions), [rayTracerOptions]);
@@ -71,13 +78,11 @@ const App = () => {
       />
       <div>
         <Data
-          decimalPlaces={1}
-          units="ms"
           title="Performance"
           data={{
-            Total: metrics.total,
-            Render: metrics.render,
-            DrawToCanvas: metrics.drawToCanvas,
+            Total: `${metrics.total.toFixed(1)} ms ${(1000 / metrics.total).toFixed(1)} fps`,
+            Render: `${metrics.render.toFixed(1)} ms`,
+            DrawToCanvas: `${metrics.drawToCanvas.toFixed(1)} ms`,
           }}
         />
         <MathsTest />
