@@ -15,6 +15,7 @@ type PerformanceMetrics = {
 };
 
 const App = () => {
+  const [showTests, setShowTests] = useState(false);
   const [theta, setTheta] = useState(0);
   const [phi, setPhi] = useState(-0.6);
   const [orbitDistance, setOrbitDistance] = useState(10);
@@ -117,7 +118,7 @@ const App = () => {
           setMetrics(timer);
         }, [rayTracer])}
       />
-      <div>
+      <div style={{ marginLeft: 50 }}>
         <Data
           title="Performance"
           data={{
@@ -126,7 +127,13 @@ const App = () => {
             DrawToCanvas: `${metrics.drawToCanvas.toFixed(1)} ms`,
           }}
         />
-        <MathsTest />
+        <div style={{ height: 40 }} />
+        <button onClick={() => setShowTests((s) => !s)} type="button">
+          Show maths tests
+        </button>
+        {showTests && (
+          <MathsTest />
+        )}
       </div>
     </div>
   );

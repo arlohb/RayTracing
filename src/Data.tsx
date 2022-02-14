@@ -41,7 +41,6 @@ const Data = ({ data, decimalPlaces, units, title }: {
   return (
     <div style={{
       marginTop: 40,
-      marginLeft: 50,
     }}
     >
       <Text style={{ marginBottom: 12 }} textStyle={{ fontWeight: 600 }}>
