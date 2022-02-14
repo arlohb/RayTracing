@@ -1,8 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Canvas from "./Canvas";
-import Image, { HexToPixel, DrawImageToCanvas } from "./Image";
+import { DrawImageToCanvas } from "./Image";
 import Data from "./Data";
 import MathsTest from "./MathsTest";
+import RayTracer, { RayTracerOptions } from "./RayTracing/RayTracer";
+import Vector3 from "./RayTracing/Vector3";
 
 type PerformanceMetrics = {
   total: number,
@@ -11,6 +13,16 @@ type PerformanceMetrics = {
 };
 
 const App = () => {
+  const [rayTracerOptions] = useState<RayTracerOptions>({
+    from: new Vector3(0, 0, 8),
+    to: new Vector3(0, 0, 0),
+    fov: 90,
+    width: 400,
+    height: 250,
+  });
+
+  const rayTracer = useMemo(() => new RayTracer(rayTracerOptions), [rayTracerOptions]);
+
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     total: 0,
     render: 0,
@@ -28,10 +40,10 @@ const App = () => {
     >
       <Canvas
         style={{
-          height: 500,
+          height: rayTracerOptions.height,
         }}
-        width={500}
-        height={500}
+        width={rayTracerOptions.width}
+        height={rayTracerOptions.height}
         // wrapped in useCallback so it doesn't rerun when state changes
         draw={useCallback((ctx: CanvasRenderingContext2D): void => {
           const timer: PerformanceMetrics = {
@@ -42,21 +54,9 @@ const App = () => {
 
           timer.total = performance.now();
 
-          const { width, height } = ctx.canvas;
-
-          const image = new Image(width, height, HexToPixel("#37aca6"));
-
           timer.render = performance.now();
 
-          for (let x = 0; x < width; x += 1) {
-            for (let y = 0; y < height; y += 1) {
-              image.data[x][y] = {
-                r: Math.random() * 255,
-                g: Math.random() * 255,
-                b: Math.random() * 255,
-              };
-            }
-          }
+          const image = rayTracer.render();
 
           timer.render = performance.now() - timer.render;
           timer.drawToCanvas = performance.now();
@@ -67,7 +67,7 @@ const App = () => {
           timer.total = performance.now() - timer.total;
 
           setMetrics(timer);
-        }, [])}
+        }, [rayTracer])}
       />
       <div>
         <Data
