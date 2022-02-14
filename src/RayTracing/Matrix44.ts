@@ -1,3 +1,5 @@
+import Vector3 from "./Vector3";
+
 type Matrix44Values = [
   [number, number, number, number],
   [number, number, number, number],
@@ -51,6 +53,15 @@ class Matrix44 {
       [0, 1, 0, 0],
       [0, 0, 1, 0],
       [x, y, z, 1],
+    ]);
+  }
+
+  static createFromVector3(right: Vector3, up: Vector3, forward: Vector3, from: Vector3): Matrix44 {
+    return new Matrix44([
+      [right.x, right.y, right.z, 0],
+      [up.x, up.y, up.z, 0],
+      [forward.x, forward.y, forward.z, 0],
+      [from.x, from.y, from.z, 1],
     ]);
   }
 
