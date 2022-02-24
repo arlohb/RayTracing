@@ -1,3 +1,4 @@
+import * as React from "react";
 import Text from "./Text";
 
 type ToStringGeneric = {

@@ -1,3 +1,5 @@
+import * as React from "react";
+
 const Text = ({ children, style, textStyle }: {
   children: string,
   style?: React.CSSProperties,

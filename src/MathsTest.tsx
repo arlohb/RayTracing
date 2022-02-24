@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import Vector3 from "./TSRayTracing/Vector3";
 import Matrix44 from "./TSRayTracing/Matrix44";
 import Data from "./Data";
