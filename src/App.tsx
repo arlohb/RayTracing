@@ -3,10 +3,10 @@ import Canvas from "./Canvas";
 import { DrawImageToCanvas } from "./Image";
 import Data from "./Data";
 import MathsTest from "./MathsTest";
-import RayTracer, { RayTracerOptions } from "./RayTracing/RayTracer";
-import Vector3 from "./RayTracing/Vector3";
-import Sphere from "./RayTracing/Sphere";
-import { SphericalToCartesian } from "./RayTracing/SphericalCoords";
+import RayTracer, { RayTracerOptions } from "./TSRayTracing/RayTracer";
+import Vector3 from "./TSRayTracing/Vector3";
+import Sphere from "./TSRayTracing/Sphere";
+import { SphericalToCartesian } from "./TSRayTracing/SphericalCoords";
 
 type PerformanceMetrics = {
   total: number,
