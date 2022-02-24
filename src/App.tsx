@@ -1,6 +1,10 @@
 import * as React from "react";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+import init, { greet } from "rs-ray-tracing";
+
 import Canvas from "./Canvas";
 import { DrawImageToCanvas } from "./Image";
 import Data from "./Data";
@@ -35,6 +39,13 @@ const App = () => {
   useEffect(() => {
     spin();
   }, [spin]);
+
+  useEffect(() => {
+    init().then(() => {
+      console.log("wasm initialized");
+      greet();
+    });
+  }, []);
 
   const [rayTracerOptions] = useState<RayTracerOptions>({
     from: position,

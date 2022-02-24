@@ -1,7 +1,7 @@
 import { defineConfig } from "vite"
 import reactRefresh from "@vitejs/plugin-react-refresh"
 import svgrPlugin from "vite-plugin-svgr"
-import eslintPlugin from "vite-plugin-eslint";
+import wasmPack from "vite-plugin-wasm-pack";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,6 +18,6 @@ export default defineConfig({
         // ...svgr options (https://react-svgr.com/docs/options/)
       },
     }),
-    eslintPlugin(),
+    wasmPack(["./rs-ray-tracing"]),
   ],
 })
