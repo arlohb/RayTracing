@@ -2,13 +2,20 @@
   "name": "tsraytracing",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "vite --host",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "wasm-build": "wasm-pack build ./rs-ray-tracing --target web"
+  },
   "dependencies": {
     "@vitejs/plugin-react-refresh": "^1.3.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "typescript": "^4.5.5",
     "vite": "^2.8.4",
-    "vite-plugin-svgr": "^1.0.1"
+    "vite-plugin-svgr": "^1.0.1",
+    "wasm-pack": "^0.10.2"
   },
   "devDependencies": {
     "@types/node": "^16.11.22",
@@ -20,11 +27,6 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^16.1.0",
     "vite-plugin-wasm-pack": "^0.1.9"
-  },
-  "scripts": {
-    "start": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
   },
   "eslintConfig": {
     "env": {
