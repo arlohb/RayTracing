@@ -12,6 +12,7 @@ import Vector3 from "./RayTracing/TypeScript/Vector3";
 import Sphere from "./RayTracing/TypeScript/Sphere";
 import { SphericalToCartesian } from "./RayTracing/TypeScript/SphericalCoords";
 import { useWindowSize } from "./Hooks";
+import Text from "./Text";
 
 type PerformanceMetrics = {
   total: number,
@@ -42,7 +43,7 @@ const App = () => {
 
   useEffect(() => {
     wasmInit().then(() => {
-      greet();
+      // greet();
     });
   }, []);
 
@@ -140,10 +141,25 @@ const App = () => {
             DrawToCanvas: `${metrics.drawToCanvas.toFixed(1)} ms`,
           }}
         />
-        <div style={{ height: 40 }} />
-        <button onClick={() => setShowTests((s) => !s)} type="button">
-          Show maths tests
-        </button>
+
+        <div style={{
+          marginTop: 20,
+          marginBottom: 20,
+          display: "flex",
+          flexDirection: "row",
+        }}
+        >
+          <input
+            style={{
+              flex: 1,
+            }}
+            type="checkbox"
+            onChange={() => setShowTests(!showTests)}
+            checked={showTests}
+          />
+          <Text style={{ flex: 10 }}>Show Maths Tests</Text>
+        </div>
+
         {showTests && (
           <MathsTest />
         )}
