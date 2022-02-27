@@ -11,6 +11,7 @@ import RayTracer, { RayTracerOptions } from "./RayTracing/TypeScript/RayTracer";
 import Vector3 from "./RayTracing/TypeScript/Vector3";
 import Sphere from "./RayTracing/TypeScript/Sphere";
 import { SphericalToCartesian } from "./RayTracing/TypeScript/SphericalCoords";
+import { useWindowSize } from "./Hooks";
 
 type PerformanceMetrics = {
   total: number,
@@ -19,6 +20,7 @@ type PerformanceMetrics = {
 };
 
 const App = () => {
+  const windowSize = useWindowSize();
   const [showTests, setShowTests] = useState(false);
   const [theta, setTheta] = useState(0);
   const [phi, setPhi] = useState(-0.6);
@@ -72,11 +74,12 @@ const App = () => {
       minHeight: "100vh", // vh = 1% of the viewport, not the parent element like % does
       width: "100%",
       display: "flex",
-      flexDirection: "row",
+      flexDirection: windowSize.width > windowSize.height ? "row" : "column",
     }}
     >
       <Canvas
         style={{
+          width: rayTracerOptions.width,
           height: rayTracerOptions.height,
         }}
         width={rayTracerOptions.width}
@@ -128,7 +131,7 @@ const App = () => {
           setMetrics(timer);
         }, [rayTracer])}
       />
-      <div style={{ marginLeft: 50 }}>
+      <div style={{ marginLeft: 20 }}>
         <Data
           title="Performance"
           data={{
