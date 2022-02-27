@@ -15,5 +15,5 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet() {
-    alert("Hello, rs-ray-tracing!");
+    alert("This is a new message!!!");
 }

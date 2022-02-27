@@ -1,4 +1,4 @@
-import Image, { HexToPixel } from "../Image";
+import Image, { HexToPixel } from "../../Image";
 import Camera from "./Camera";
 import Ray from "./Ray";
 import Sphere from "./Sphere";

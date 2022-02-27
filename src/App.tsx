@@ -1,18 +1,16 @@
-import * as React from "react";
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import init, { greet } from "rs-ray-tracing";
+// eslint-disable-next-line import/no-relative-packages
+import wasmInit, { greet } from "./RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
 
 import Canvas from "./Canvas";
 import { DrawImageToCanvas } from "./Image";
 import Data from "./Data";
 import MathsTest from "./MathsTest";
-import RayTracer, { RayTracerOptions } from "./TSRayTracing/RayTracer";
-import Vector3 from "./TSRayTracing/Vector3";
-import Sphere from "./TSRayTracing/Sphere";
-import { SphericalToCartesian } from "./TSRayTracing/SphericalCoords";
+import RayTracer, { RayTracerOptions } from "./RayTracing/TypeScript/RayTracer";
+import Vector3 from "./RayTracing/TypeScript/Vector3";
+import Sphere from "./RayTracing/TypeScript/Sphere";
+import { SphericalToCartesian } from "./RayTracing/TypeScript/SphericalCoords";
 
 type PerformanceMetrics = {
   total: number,
@@ -41,8 +39,7 @@ const App = () => {
   }, [spin]);
 
   useEffect(() => {
-    init().then(() => {
-      console.log("wasm initialized");
+    wasmInit().then(() => {
       greet();
     });
   }, []);

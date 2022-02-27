@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 
 // the props of the native canvas element
 type CanvasProps = React.DetailedHTMLProps<
