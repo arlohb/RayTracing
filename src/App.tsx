@@ -1,18 +1,27 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 // eslint-disable-next-line import/no-relative-packages
-import wasmInit, { get_image } from "./RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
+import wasmInit, { get_image as RSRender } from "./RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
 
 import Canvas from "./Canvas";
 import { DrawImageToCanvas } from "./Image";
 import Data from "./Data";
 import MathsTest from "./MathsTest";
-import RayTracer, { RayTracerOptions } from "./RayTracing/TypeScript/RayTracer";
+import TSRender, { Scene } from "./RayTracing/TypeScript/RayTracer";
 import Vector3 from "./RayTracing/TypeScript/Vector3";
 import Sphere from "./RayTracing/TypeScript/Sphere";
 import { SphericalToCartesian } from "./RayTracing/TypeScript/SphericalCoords";
 import { useWindowSize } from "./Hooks";
 import Text from "./Text";
+
+type RayTracerOptions = {
+  from: Vector3,
+  to: Vector3,
+  fov: number,
+  width: number,
+  height: number,
+  scene: Scene,
+};
 
 type PerformanceMetrics = {
   total: number,
@@ -22,6 +31,31 @@ type PerformanceMetrics = {
 
 type Renderer = "rust" | "typescript";
 
+const RendererButton = ({ setRenderer, name, renderer }: {
+  setRenderer: (newRenderer: Renderer) => void,
+  name: Renderer,
+  renderer: Renderer,
+}) => {
+  const capitalisedName = `${name[0].toUpperCase()}${name.substring(1)}`;
+
+  return (
+    <button
+      type="button"
+      style={{
+        width: 200,
+        marginRight: 20,
+      }}
+      onClick={() => setRenderer(name)}
+    >
+      {
+      name === renderer
+        ? <b>{capitalisedName}</b>
+        : capitalisedName
+      }
+    </button>
+  );
+};
+
 const App = () => {
   const windowSize = useWindowSize();
   const [showTests, setShowTests] = useState(false);
@@ -29,9 +63,9 @@ const App = () => {
   const [phi, setPhi] = useState(-0.6);
   const [orbitDistance, setOrbitDistance] = useState(10);
   const [position, setPosition] = useState<Vector3>(new Vector3(5.77, 5.77, 5.77));
-  const [renderer, setRenderer] = useState<Renderer>();
+  const [renderer, setRenderer] = useState<Renderer>("typescript");
 
-  const [rayTracerOptions] = useState<RayTracerOptions>({
+  const [options] = useState<RayTracerOptions>({
     from: position,
     to: new Vector3(0, 0, 0),
     fov: 90,
@@ -45,7 +79,14 @@ const App = () => {
     ],
   });
 
-  const rayTracer = useMemo(() => new RayTracer({ ...rayTracerOptions, from: position }), [rayTracerOptions, position]);
+  const rayTracer = useMemo<(from: Vector3, to: Vector3, fov: number, width: number, height: number, scene: Scene) => [number, number, number][][]>(() => {
+    // if (renderer === "typescript") {
+    //   return TSRender;
+    // } if (renderer === "rust") {
+    //   return RSRender;
+    // }
+    return TSRender;
+  }, []);
 
   useEffect(() => {
     setPosition(SphericalToCartesian(phi, theta).normalize().mul(orbitDistance));
@@ -61,11 +102,8 @@ const App = () => {
   }, [spin]);
 
   useEffect(() => {
-    wasmInit().then(() => {
-      const image = get_image(rayTracerOptions.width, rayTracerOptions.height);
-      console.log(image);
-    });
-  }, [rayTracerOptions]);
+    wasmInit();
+  }, []);
 
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     total: 0,
@@ -84,11 +122,11 @@ const App = () => {
     >
       <Canvas
         style={{
-          width: rayTracerOptions.width,
-          height: rayTracerOptions.height,
+          width: options.width,
+          height: options.height,
         }}
-        width={rayTracerOptions.width}
-        height={rayTracerOptions.height}
+        width={options.width}
+        height={options.height}
         onKeyPressCapture={({ key }) => {
           const speed = 0.2;
           const scrollSpeed = 1;
@@ -113,6 +151,7 @@ const App = () => {
         }}
         // wrapped in useCallback so it doesn't rerun when state changes
         draw={useCallback((ctx: CanvasRenderingContext2D): void => {
+          console.log(options);
           const timer: PerformanceMetrics = {
             total: 0,
             render: 0,
@@ -123,7 +162,7 @@ const App = () => {
 
           timer.render = performance.now();
 
-          const image = rayTracer.render();
+          const image = rayTracer(options.from, options.to, options.fov, options.width, options.height, options.scene);
 
           timer.render = performance.now() - timer.render;
           timer.drawToCanvas = performance.now();
@@ -134,9 +173,25 @@ const App = () => {
           timer.total = performance.now() - timer.total;
 
           setMetrics(timer);
-        }, [rayTracer])}
+        }, [rayTracer, options])}
       />
       <div style={{ marginLeft: 20 }}>
+        <div
+          style={{
+            marginTop: 20,
+          }}
+        >
+          <RendererButton
+            setRenderer={setRenderer}
+            name="typescript"
+            renderer={renderer}
+          />
+          <RendererButton
+            setRenderer={setRenderer}
+            name="rust"
+            renderer={renderer}
+          />
+        </div>
         <Data
           title="Performance"
           data={{
