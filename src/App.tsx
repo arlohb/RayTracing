@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 // eslint-disable-next-line import/no-relative-packages
-import wasmInit, { greet } from "./RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
+import wasmInit, { get_image } from "./RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
 
 import Canvas from "./Canvas";
 import { DrawImageToCanvas } from "./Image";
@@ -20,6 +20,8 @@ type PerformanceMetrics = {
   drawToCanvas: number,
 };
 
+type Renderer = "rust" | "typescript";
+
 const App = () => {
   const windowSize = useWindowSize();
   const [showTests, setShowTests] = useState(false);
@@ -27,25 +29,7 @@ const App = () => {
   const [phi, setPhi] = useState(-0.6);
   const [orbitDistance, setOrbitDistance] = useState(10);
   const [position, setPosition] = useState<Vector3>(new Vector3(5.77, 5.77, 5.77));
-
-  useEffect(() => {
-    setPosition(SphericalToCartesian(phi, theta).normalize().mul(orbitDistance));
-  }, [theta, phi, orbitDistance]);
-
-  const spin = useCallback(() => {
-    setTheta((t) => t + 0.04);
-    setTimeout(spin, 10);
-  }, [setTheta]);
-
-  useEffect(() => {
-    spin();
-  }, [spin]);
-
-  useEffect(() => {
-    wasmInit().then(() => {
-      // greet();
-    });
-  }, []);
+  const [renderer, setRenderer] = useState<Renderer>();
 
   const [rayTracerOptions] = useState<RayTracerOptions>({
     from: position,
@@ -62,6 +46,26 @@ const App = () => {
   });
 
   const rayTracer = useMemo(() => new RayTracer({ ...rayTracerOptions, from: position }), [rayTracerOptions, position]);
+
+  useEffect(() => {
+    setPosition(SphericalToCartesian(phi, theta).normalize().mul(orbitDistance));
+  }, [theta, phi, orbitDistance]);
+
+  const spin = useCallback(() => {
+    setTheta((t) => t + 0.04);
+    setTimeout(spin, 10);
+  }, [setTheta]);
+
+  useEffect(() => {
+    spin();
+  }, [spin]);
+
+  useEffect(() => {
+    wasmInit().then(() => {
+      const image = get_image(rayTracerOptions.width, rayTracerOptions.height);
+      console.log(image);
+    });
+  }, [rayTracerOptions]);
 
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     total: 0,
