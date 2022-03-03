@@ -96,17 +96,17 @@ class RayTracer {
 
           const brightness = 1 - (angle / Math.PI);
 
-          image.data[x][y] = {
-            r: brightness * 255,
-            g: brightness * 255,
-            b: brightness * 255,
-          };
+          image.data[x][y] = [
+            brightness * 255,
+            brightness * 255,
+            brightness * 255,
+          ];
         } else {
-          image.data[x][y] = {
-            r: 0,
-            g: 0,
-            b: 0,
-          };
+          image.data[x][y] = [
+            0,
+            0,
+            0,
+          ];
         }
       }
     }
