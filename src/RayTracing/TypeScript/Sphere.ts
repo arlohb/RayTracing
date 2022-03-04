@@ -1,6 +1,6 @@
 import Ray from "./Ray";
 import { SolveQuadratic } from "./Solver";
-import Vector3 from "./Vector3";
+import Vec, { Vector3 } from "./Vector3";
 
 class Sphere {
   origin: Vector3;
@@ -13,11 +13,11 @@ class Sphere {
 
   intersect(ray: Ray): number | null {
     // working out in whiteboard
-    const newOrigin = ray.origin.sub(this.origin);
+    const newOrigin = Vec.sub(ray.origin, this.origin);
 
     const a: number = 1;
-    const b: number = 2 * ray.direction.dot(newOrigin);
-    const c: number = newOrigin.dot(newOrigin) - (this.radius ** 2);
+    const b: number = 2 * Vec.dot(ray.direction, newOrigin);
+    const c: number = Vec.dot(newOrigin, newOrigin) - (this.radius ** 2);
 
     const solutions = SolveQuadratic(a, b, c);
 
@@ -33,7 +33,7 @@ class Sphere {
 
   normalAtPoint(point: Vector3): Vector3 {
     // simple circle stuff
-    const normal = point.sub(this.origin).normalize();
+    const normal = Vec.normalize(Vec.sub(point, this.origin));
     return normal;
   }
 }

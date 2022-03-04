@@ -1,5 +1,5 @@
 import Matrix44 from "./Matrix44";
-import Vector3 from "./Vector3";
+import Vec, { Vector3 } from "./Vector3";
 
 // these are the centers of each edge
 type ImagePlane = {
@@ -31,12 +31,12 @@ class Camera {
   }
 
   getVectors(): [Vector3, Vector3, Vector3] {
-    const forward = this.from.sub(this.to).normalize();
+    const forward = Vec.normalize(Vec.sub(this.from, this.to));
 
-    const temp = new Vector3(0, 1, 0);
-    const right = temp.normalize().cross(forward).normalize();
+    const temp: Vector3 = [0, 1, 0];
+    const right = Vec.normalize(Vec.cross(Vec.normalize(temp), forward));
 
-    const up = forward.cross(right).normalize();
+    const up = Vec.normalize(Vec.cross(forward, right));
 
     return [right, up, forward];
   }
@@ -54,13 +54,13 @@ class Camera {
 
     // the image plane is 1 unit away from the camera
     // this is - not + because the camera point in the -forward direction
-    const center = this.from.add(forward.mul(-1));
+    const center = Vec.add(this.from, Vec.mul(forward, -1));
 
     const imagePlane: ImagePlane = {
-      left: center.sub(right.mul(halfWidth)),
-      right: center.add(right.mul(halfWidth)),
-      bottom: center.sub(up.mul(halfHeight)),
-      top: center.add(up.mul(halfHeight)),
+      left: Vec.sub(center, Vec.mul(right, halfWidth)),
+      right: Vec.add(center, Vec.mul(right, halfWidth)),
+      bottom: Vec.sub(center, Vec.mul(up, halfHeight)),
+      top: Vec.add(center, Vec.mul(up, halfHeight)),
       center,
     };
 

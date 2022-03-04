@@ -8,7 +8,7 @@ import { DrawImageToCanvas } from "./Image";
 import Data from "./Data";
 import MathsTest from "./MathsTest";
 import TSRender, { Scene } from "./RayTracing/TypeScript/RayTracer";
-import Vector3 from "./RayTracing/TypeScript/Vector3";
+import Vec, { Vector3 } from "./RayTracing/TypeScript/Vector3";
 import Sphere from "./RayTracing/TypeScript/Sphere";
 import { SphericalToCartesian } from "./RayTracing/TypeScript/SphericalCoords";
 import { useWindowSize } from "./Hooks";
@@ -62,20 +62,20 @@ const App = () => {
   const [theta, setTheta] = useState(0);
   const [phi, setPhi] = useState(-0.6);
   const [orbitDistance, setOrbitDistance] = useState(10);
-  const [position, setPosition] = useState<Vector3>(new Vector3(5.77, 5.77, 5.77));
+  const [position, setPosition] = useState<Vector3>([5.77, 5.77, 5.77]);
   const [renderer, setRenderer] = useState<Renderer>("typescript");
 
   const [options] = useState<RayTracerOptions>({
     from: position,
-    to: new Vector3(0, 0, 0),
+    to: [0, 0, 0],
     fov: 90,
     width: 400,
     height: 300,
     scene: [
-      new Sphere(new Vector3(0, 0, 0), 2),
-      new Sphere(new Vector3(5, 0, 0), 1),
-      new Sphere(new Vector3(0, 0, 5), 1),
-      new Sphere(new Vector3(-1, 0, 2), 1),
+      new Sphere([0, 0, 0], 2),
+      new Sphere([5, 0, 0], 1),
+      new Sphere([0, 0, 5], 1),
+      new Sphere([-1, 0, 2], 1),
     ],
   });
 
@@ -89,7 +89,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    setPosition(SphericalToCartesian(phi, theta).normalize().mul(orbitDistance));
+    setPosition(Vec.mul(Vec.normalize(SphericalToCartesian(phi, theta)), orbitDistance));
   }, [theta, phi, orbitDistance]);
 
   const spin = useCallback(() => {

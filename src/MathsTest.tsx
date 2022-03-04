@@ -1,10 +1,10 @@
-import Vector3 from "./RayTracing/TypeScript/Vector3";
+import Vec, { Vector3 } from "./RayTracing/TypeScript/Vector3";
 import Matrix44 from "./RayTracing/TypeScript/Matrix44";
 import Data from "./Data";
 
 const MathsTest = () => {
-  const PointA = new Vector3(2, -7, 4);
-  const PointB = new Vector3(-3, 9, -1);
+  const PointA: Vector3 = [2, -7, 4];
+  const PointB: Vector3 = [-3, 9, -1];
 
   const MatT = Matrix44.createScale(3).mul(Matrix44.createTranslation(1, 2, 3));
 
@@ -16,15 +16,15 @@ const MathsTest = () => {
         data={{
           "Point A": PointA,
           "Point B": PointB,
-          "Length of A": [PointA.length().toFixed(1), "8.3"],
-          "A Normalized": PointA.normalize(),
-          "Length of A Normalized": [PointA.normalize().length(), 1],
-          "Cross of X and Y": [Vector3.unitX.cross(Vector3.unitY), Vector3.unitZ],
-          "Dot of X and Y": [Vector3.unitX.dot(Vector3.unitY), 0],
-          "Dot of A and B": [PointA.dot(PointB), -73],
-          "Sum of A and B": [PointA.add(PointB), new Vector3(-1, 2, 3)],
-          "Subtract B from A": [PointA.sub(PointB), new Vector3(5, -16, 5)],
-          "Multiply A by 3": [PointA.mul(3), new Vector3(6, -21, 12)],
+          "Length of A": [Vec.length(PointA).toFixed(1), "8.3"],
+          "A Normalized": Vec.normalize(PointA),
+          "Length of A Normalized": [Vec.length(Vec.normalize(PointA)), 1],
+          "Cross of X and Y": [Vec.cross(Vec.unitX, Vec.unitY), Vec.unitZ],
+          "Dot of X and Y": [Vec.dot(Vec.unitX, Vec.unitY), 0],
+          "Dot of A and B": [Vec.dot(PointA, PointB), -73],
+          "Sum of A and B": [Vec.add(PointA, PointB), [-1, 2, 3]],
+          "Subtract B from A": [Vec.sub(PointA, PointB), [5, -16, 5]],
+          "Multiply A by 3": [Vec.mul(PointA, 3), [6, -21, 12]],
         }}
       />
       <Data
@@ -40,11 +40,11 @@ const MathsTest = () => {
         decimalPlaces={2}
         title="Transformations Test"
         data={{
-          "A by identity": [PointA.transformPoint(Matrix44.identity), PointA],
-          "Scale A by 3": [PointA.transformPoint(Matrix44.createScale(3)), PointA.mul(3)],
-          "Rotate unit X pi/2 clockwise about Z axis": [Vector3.unitX.transformPoint(Matrix44.createRotation("z", Math.PI / 2)), Vector3.unitY],
-          "Unit X (as a vector) by matrix T": [Vector3.unitX.transformVector(MatT), new Vector3(3, 0, 0)],
-          "Unit X (as a point) by matrix T": [Vector3.unitX.transformPoint(MatT), new Vector3(4, 2, 3)],
+          "A by identity": [Vec.transformPoint(PointA, Matrix44.identity.values), PointA],
+          "Scale A by 3": [Vec.transformPoint(PointA, Matrix44.createScale(3).values), Vec.mul(PointA, 3)],
+          "Rotate unit X pi/2 clockwise about Z axis": [Vec.transformPoint(Vec.unitX, Matrix44.createRotation("z", Math.PI / 2).values), Vec.unitY],
+          "Unit X (as a vector) by matrix T": [Vec.transformPoint(Vec.unitX, MatT.values), [3, 0, 0]],
+          "Unit X (as a point) by matrix T": [Vec.transformPoint(Vec.unitX, MatT.values), [4, 2, 3]],
         }}
       />
     </>

@@ -2,7 +2,7 @@ import { HexToPixel } from "../../Image";
 import Camera from "./Camera";
 import Ray from "./Ray";
 import Sphere from "./Sphere";
-import Vector3 from "./Vector3";
+import Vec, { Vector3 } from "./Vector3";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const map = (v: number, min1: number, max1: number, min2: number, max2: number): number => {
@@ -29,10 +29,13 @@ const render = (
   const imagePlane = camera.createImagePlane();
 
   // working for this is in whiteboard
-  const topLeftPoint = imagePlane.left.add(imagePlane.top).sub(imagePlane.center);
+  const topLeftPoint = Vec.sub(
+    Vec.add(imagePlane.left, imagePlane.top),
+    imagePlane.center,
+  );
 
-  const widthWorldSpace: number = imagePlane.right.sub(imagePlane.left).length();
-  const heightWorldSpace: number = imagePlane.top.sub(imagePlane.bottom).length();
+  const widthWorldSpace = Vec.length(Vec.sub(imagePlane.right, imagePlane.left));
+  const heightWorldSpace = Vec.length(Vec.sub(imagePlane.top, imagePlane.bottom));
   const [right, up] = camera.getVectors();
 
   const image: [number, number, number][][] = Array.from({ length: width }, () => (Array<[number, number, number]>(height).fill(HexToPixel("#09c7b7"))));
@@ -47,17 +50,17 @@ const render = (
         y: (y + 0.5) / height,
       };
 
-      const xOffset: Vector3 = right.mul(pixelScreenSpace.x * widthWorldSpace);
+      const xOffset = Vec.mul(right, pixelScreenSpace.x * widthWorldSpace);
       // mul -1 because it's offset down
-      const yOffset: Vector3 = up.mul(-1).mul(pixelScreenSpace.y * heightWorldSpace);
+      const yOffset = Vec.mul(Vec.mul(up, -1), pixelScreenSpace.y * heightWorldSpace);
 
-      const pixelWorldSpace = topLeftPoint.add(xOffset).add(yOffset);
+      const pixelWorldSpace = Vec.add(topLeftPoint, Vec.add(xOffset, yOffset));
 
-      const direction = pixelWorldSpace.sub(camera.from).normalize();
+      const direction = Vec.normalize(Vec.sub(pixelWorldSpace, camera.from));
 
       const ray = new Ray("primary", camera.from, direction);
 
-      let minHit: Hit = { object: new Sphere(new Vector3(0, 0, 0), 1), distance: 1e9 };
+      let minHit: Hit = { object: new Sphere([0, 0, 0], 1), distance: 1e9 };
 
       scene.forEach((sphere) => {
         const distance = sphere.intersect(ray);
@@ -74,13 +77,13 @@ const render = (
       });
 
       if (minHit.distance !== 1e9) {
-        const hitPoint: Vector3 = ray.origin.add(ray.direction.mul(minHit.distance));
+        const hitPoint = Vec.add(ray.origin, Vec.mul(ray.direction, minHit.distance));
         const normal = minHit.object.normalAtPoint(hitPoint);
 
         const [,,forward] = camera.getVectors();
 
         // normal length can be left out as it will always be 1
-        const angle = Math.acos((forward.dot(normal)) / forward.length());
+        const angle = Math.acos((Vec.dot(forward, normal)) / Vec.length(forward));
 
         if (angle < minAngle) minAngle = angle;
         if (angle > maxAngle) maxAngle = angle;

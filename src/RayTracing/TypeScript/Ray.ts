@@ -1,4 +1,4 @@
-import Vector3 from "./Vector3";
+import Vec, { Vector3 } from "./Vector3";
 
 type RayType = "primary" | "shadow";
 
@@ -14,7 +14,7 @@ class Ray {
     this.origin = origin;
 
     // this should be passed in normalized anyway, but just in case
-    this.direction = direction.normalize();
+    this.direction = Vec.normalize(direction);
   }
 }
 

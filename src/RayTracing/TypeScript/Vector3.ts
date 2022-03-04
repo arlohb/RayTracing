@@ -1,115 +1,124 @@
-import Matrix44 from "./Matrix44";
+import { Matrix44Values } from "./Matrix44";
 
-class Vector3 {
-  static readonly unitX = new Vector3(1, 0, 0);
-  static readonly unitY = new Vector3(0, 1, 0);
-  static readonly unitZ = new Vector3(0, 0, 1);
+type Vector3 = [number, number, number];
 
-  static readonly epsilon = 0.0000001;
+const unitX: Vector3 = [1, 0, 0];
+const unitY: Vector3 = [0, 1, 0];
+const unitZ: Vector3 = [0, 0, 1];
 
-  x: number;
-  y: number;
-  z: number;
+const epsilon = 0.0000001;
 
-  constructor(x: number, y: number, z: number) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
+const length = (a: Vector3): number => {
+  return Math.sqrt((a[0] ** 2) + (a[1] ** 2) + (a[2] ** 2));
+};
+
+const dot = (a: Vector3, b: Vector3): number => {
+  return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
+};
+
+const normalize = (a: Vector3): Vector3 => {
+  const lengthSquared = dot(a, a);
+
+  if (lengthSquared > 0) {
+    const inverseLength = 1 / Math.sqrt(lengthSquared);
+    return [
+      a[0] * inverseLength,
+      a[1] * inverseLength,
+      a[2] * inverseLength,
+    ];
   }
 
-  length(): number {
-    return Math.sqrt((this.x ** 2) + (this.y ** 2) + (this.z ** 2));
-  }
+  return a;
+};
 
-  dot(vec: Vector3): number {
-    return this.x * vec.x + this.y * vec.y + this.z * vec.z;
-  }
+const cross = (a: Vector3, b: Vector3): Vector3 => {
+  return [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0],
+  ];
+};
 
-  normalize(): Vector3 {
-    const vec = this;
+const add = (a: Vector3, b: Vector3): Vector3 => {
+  return [
+    a[0] + b[0],
+    a[1] + b[1],
+    a[2] + b[2],
+  ];
+};
 
-    const lengthSquared = vec.dot(this);
-    if (lengthSquared > 0) {
-      const inverseLength = 1 / Math.sqrt(lengthSquared);
-      return new Vector3(
-        this.x * inverseLength,
-        this.y * inverseLength,
-        this.z * inverseLength,
-      );
-    }
+const sub = (a: Vector3, b: Vector3): Vector3 => {
+  return [
+    a[0] - b[0],
+    a[1] - b[1],
+    a[2] - b[2],
+  ];
+};
 
-    return vec;
-  }
+const mul = (a: Vector3, r: number): Vector3 => {
+  return [
+    a[0] * r,
+    a[1] * r,
+    a[2] * r,
+  ];
+};
 
-  cross(vec: Vector3): Vector3 {
-    return new Vector3(
-      this.y * vec.z - this.z * vec.y,
-      this.z * vec.x - this.x * vec.z,
-      this.x * vec.y - this.y * vec.x,
-    );
-  }
+const toString = (a: Vector3): string => {
+  return `x: ${a[0]}, y: ${a[1]}, z: ${a[2]}`;
+};
 
-  add(vec: Vector3): Vector3 {
-    return new Vector3(
-      this.x + vec.x,
-      this.y + vec.y,
-      this.z + vec.z,
-    );
-  }
+const toFixed = (a: Vector3, decimalPlaces: number): string => {
+  return `x: ${a[0].toFixed(decimalPlaces)}, y: ${a[1].toFixed(decimalPlaces)}, z: ${a[2].toFixed(decimalPlaces)}`;
+};
 
-  sub(vec: Vector3): Vector3 {
-    return new Vector3(
-      this.x - vec.x,
-      this.y - vec.y,
-      this.z - vec.z,
-    );
-  }
+const equals = (a: Vector3, b: Vector3): boolean => {
+  return (
+    Math.abs(a[0] - a[1]) < epsilon
+    && Math.abs(a[1] - a[1]) < epsilon
+    && Math.abs(a[2] - b[2]) < epsilon
+  );
+};
 
-  mul(r: number): Vector3 {
-    return new Vector3(
-      this.x * r,
-      this.y * r,
-      this.z * r,
-    );
-  }
+const transformPoint = (point: Vector3, matrix: Matrix44Values): Vector3 => {
+  // w could also be computed here with this:
+  // const w = this.x * mat.values[0][3] + this.y * mat.values[1][3] * mat.values[2][3] + mat.values[3][3];
+  // and then each coordinate would be divided by w, to keep w at 1
+  // however, w should only be changed by the above formula when doing perspective projection matrices,
+  // which are used in rasterization and NOT ray tracing
 
-  toString(): string {
-    return `x: ${this.x}, y: ${this.y}, z: ${this.z}`;
-  }
+  return [
+    point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0] + matrix[3][0],
+    point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1] + matrix[3][1],
+    point[0] * matrix[0][2] + point[1] * matrix[1][2] + point[2] * matrix[2][2] + matrix[3][2],
+  ];
+};
 
-  toFixed(decimalPlaces: number): string {
-    return `x: ${this.x.toFixed(decimalPlaces)}, y: ${this.y.toFixed(decimalPlaces)}, z: ${this.z.toFixed(decimalPlaces)}`;
-  }
+const transformVector = (point: Vector3, matrix: Matrix44Values): Vector3 => {
+  return [
+    point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0],
+    point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1],
+    point[0] * matrix[0][2] + point[1] * matrix[1][2] + point[2] * matrix[2][2],
+  ];
+};
 
-  equals(vec: Vector3): boolean {
-    return (
-      Math.abs(this.x - vec.x) < Vector3.epsilon
-      && Math.abs(this.y - vec.y) < Vector3.epsilon
-      && Math.abs(this.z - vec.z) < Vector3.epsilon
-    );
-  }
+const Vec = {
+  unitX,
+  unitY,
+  unitZ,
+  epsilon,
+  length,
+  dot,
+  normalize,
+  cross,
+  add,
+  sub,
+  mul,
+  toString,
+  toFixed,
+  equals,
+  transformPoint,
+  transformVector,
+};
 
-  transformPoint(mat: Matrix44): Vector3 {
-    // w could also be computed here with this:
-    // const w = this.x * mat.values[0][3] + this.y * mat.values[1][3] * mat.values[2][3] + mat.values[3][3];
-    // and then each coordinate would be divided by w, to keep w at 1
-    // however, w should only be changed by the above formula when doing perspective projection matrices,
-    // which are used in rasterization and NOT ray tracing
-
-    return new Vector3(
-      this.x * mat.values[0][0] + this.y * mat.values[1][0] + this.z * mat.values[2][0] + mat.values[3][0],
-      this.x * mat.values[0][1] + this.y * mat.values[1][1] + this.z * mat.values[2][1] + mat.values[3][1],
-      this.x * mat.values[0][2] + this.y * mat.values[1][2] + this.z * mat.values[2][2] + mat.values[3][2],
-    );
-  }
-
-  transformVector(mat: Matrix44): Vector3 {
-    return new Vector3(
-      this.x * mat.values[0][0] + this.y * mat.values[1][0] + this.z * mat.values[2][0],
-      this.x * mat.values[0][1] + this.y * mat.values[1][1] + this.z * mat.values[2][1],
-      this.x * mat.values[0][2] + this.y * mat.values[1][2] + this.z * mat.values[2][2],
-    );
-  }
-}
-
-export default Vector3;
+export default Vec;
+export type { Vector3 };
