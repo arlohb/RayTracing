@@ -57,10 +57,9 @@ const Viewport = ({ setMetrics }: { setMetrics: (metrics: PerformanceMetrics) =>
   const [theta, setTheta] = useState(0);
   const [phi, setPhi] = useState(-0.6);
   const [orbitDistance, setOrbitDistance] = useState(10);
-  const [position, setPosition] = useState<Vector3>([5.77, 5.77, 5.77]);
 
-  const [options] = useState<RayTracerOptions>({
-    from: position,
+  const [options, setOptions] = useState<RayTracerOptions>({
+    from: [5.77, 5.77, 5.77],
     to: [0, 0, 0],
     fov: 90,
     width: 400,
@@ -97,7 +96,6 @@ const Viewport = ({ setMetrics }: { setMetrics: (metrics: PerformanceMetrics) =>
     };
 
     timer.total = performance.now();
-
     timer.render = performance.now();
 
     const image = rayTracer(options.from, options.to, options.fov, options.width, options.height, options.scene);
@@ -114,7 +112,8 @@ const Viewport = ({ setMetrics }: { setMetrics: (metrics: PerformanceMetrics) =>
   }, [rayTracer, options, setMetrics]);
 
   useEffect(() => {
-    setPosition(Vec.mul(Vec.normalize(SphericalToCartesian(phi, theta)), orbitDistance));
+    const position = Vec.mul(Vec.normalize(SphericalToCartesian(phi, theta)), orbitDistance);
+    setOptions((oldOptions) => ({ ...oldOptions, from: position }));
   }, [theta, phi, orbitDistance]);
 
   const spin = useCallback(() => {
@@ -132,7 +131,7 @@ const Viewport = ({ setMetrics }: { setMetrics: (metrics: PerformanceMetrics) =>
 
   useEffect(() => {
     draw();
-  }, [draw]);
+  }, [draw, theta, phi, orbitDistance]);
 
   return (
     <canvas
