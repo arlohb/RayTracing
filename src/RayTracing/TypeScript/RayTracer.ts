@@ -27,7 +27,7 @@ const render = (
     [number, number, number], // center
     number, // radius
   ][],
-): [number, number, number][][] => {
+): void => {
   const camera = new Camera(from, to, fov, width, height);
 
   const imagePlane = camera.createImagePlane();
@@ -109,7 +109,28 @@ const render = (
     }
   }
 
-  return image;
+  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+  const imageData = ctx.createImageData(width, height);
+
+  for (let x = 0; x < width; x += 1) {
+    for (let y = 0; y < height; y += 1) {
+      const pixel = image[x][y];
+      const dataIndex = 4 * (x + (y * width));
+
+      // eslint-disable-next-line prefer-destructuring
+      imageData.data[dataIndex + 0] = pixel[0];
+      // eslint-disable-next-line prefer-destructuring
+      imageData.data[dataIndex + 1] = pixel[1];
+      // eslint-disable-next-line prefer-destructuring
+      imageData.data[dataIndex + 2] = pixel[2];
+
+      imageData.data[dataIndex + 3] = 255;
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0);
 };
 
 export default render;

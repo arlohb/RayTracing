@@ -95,6 +95,7 @@ name = "rs-ray-tracing"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",
+ "js-sys",
  "serde-wasm-bindgen",
  "wasm-bindgen",
  "web-sys",

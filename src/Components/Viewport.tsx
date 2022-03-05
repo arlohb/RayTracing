@@ -16,31 +16,6 @@ const HexToPixel = (hex: string): [number, number, number] => (
   ]
 );
 
-const DrawImageToCanvas = (ctx: CanvasRenderingContext2D, image: [number, number, number][][]) => {
-  const width = image.length;
-  const height = image[0].length;
-
-  const imageData = ctx.createImageData(width, height);
-
-  for (let x = 0; x < width; x += 1) {
-    for (let y = 0; y < height; y += 1) {
-      const pixel = image[x][y];
-      const dataIndex = 4 * (x + (y * width));
-
-      // eslint-disable-next-line prefer-destructuring
-      imageData.data[dataIndex + 0] = pixel[0];
-      // eslint-disable-next-line prefer-destructuring
-      imageData.data[dataIndex + 1] = pixel[1];
-      // eslint-disable-next-line prefer-destructuring
-      imageData.data[dataIndex + 2] = pixel[2];
-
-      imageData.data[dataIndex + 3] = 255;
-    }
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-};
-
 type RayTracerOptions = {
   from: [number, number, number],
   to: [number, number, number],
@@ -87,14 +62,7 @@ const Viewport = ({ setMetrics, renderer }: {
     return TSRender;
   }, [renderer]);
 
-  const ref = useRef<HTMLCanvasElement>(null);
-
   const draw = useCallback((): void => {
-    const canvas = ref.current;
-
-    // the canvas will be initialised at this point
-    const ctx = (canvas as HTMLCanvasElement).getContext("2d") as CanvasRenderingContext2D;
-
     const timer: PerformanceMetrics = {
       total: 0,
       render: 0,
@@ -104,12 +72,10 @@ const Viewport = ({ setMetrics, renderer }: {
     timer.total = performance.now();
     timer.render = performance.now();
 
-    const image = rayTracer(options.from, options.to, options.fov, options.width, options.height, options.scene);
+    rayTracer(options.from, options.to, options.fov, options.width, options.height, options.scene);
 
     timer.render = performance.now() - timer.render;
     timer.drawToCanvas = performance.now();
-
-    DrawImageToCanvas(ctx, image);
 
     timer.drawToCanvas = performance.now() - timer.drawToCanvas;
     timer.total = performance.now() - timer.total;
@@ -141,8 +107,8 @@ const Viewport = ({ setMetrics, renderer }: {
 
   return (
     <canvas
+      id="canvas"
       tabIndex={0}
-      ref={ref}
       onClick={draw}
       style={{
         userSelect: "none", // allows the user to double click without selecting everything
