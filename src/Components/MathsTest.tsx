@@ -1,5 +1,5 @@
-import Vec, { Vector3 } from "./RayTracing/TypeScript/Vector3";
-import Matrix44 from "./RayTracing/TypeScript/Matrix44";
+import Vec, { Vector3 } from "../RayTracing/TypeScript/Vector3";
+import Matrix44 from "../RayTracing/TypeScript/Matrix44";
 import Data from "./Data";
 
 const MathsTest = () => {
