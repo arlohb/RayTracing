@@ -1,22 +1,20 @@
 import { Matrix44Values } from "./Matrix44";
 
-type Vector3 = [number, number, number];
-
-const unitX: Vector3 = [1, 0, 0];
-const unitY: Vector3 = [0, 1, 0];
-const unitZ: Vector3 = [0, 0, 1];
+const unitX: [number, number, number] = [1, 0, 0];
+const unitY: [number, number, number] = [0, 1, 0];
+const unitZ: [number, number, number] = [0, 0, 1];
 
 const epsilon = 0.0000001;
 
-const length = (a: Vector3): number => {
+const length = (a: [number, number, number]): number => {
   return Math.sqrt((a[0] ** 2) + (a[1] ** 2) + (a[2] ** 2));
 };
 
-const dot = (a: Vector3, b: Vector3): number => {
+const dot = (a: [number, number, number], b: [number, number, number]): number => {
   return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
 };
 
-const normalize = (a: Vector3): Vector3 => {
+const normalize = (a: [number, number, number]): [number, number, number] => {
   const lengthSquared = dot(a, a);
 
   if (lengthSquared > 0) {
@@ -31,7 +29,7 @@ const normalize = (a: Vector3): Vector3 => {
   return a;
 };
 
-const cross = (a: Vector3, b: Vector3): Vector3 => {
+const cross = (a: [number, number, number], b: [number, number, number]): [number, number, number] => {
   return [
     a[1] * b[2] - a[2] * b[1],
     a[2] * b[0] - a[0] * b[2],
@@ -39,7 +37,7 @@ const cross = (a: Vector3, b: Vector3): Vector3 => {
   ];
 };
 
-const add = (a: Vector3, b: Vector3): Vector3 => {
+const add = (a: [number, number, number], b: [number, number, number]): [number, number, number] => {
   return [
     a[0] + b[0],
     a[1] + b[1],
@@ -47,7 +45,7 @@ const add = (a: Vector3, b: Vector3): Vector3 => {
   ];
 };
 
-const sub = (a: Vector3, b: Vector3): Vector3 => {
+const sub = (a: [number, number, number], b: [number, number, number]): [number, number, number] => {
   return [
     a[0] - b[0],
     a[1] - b[1],
@@ -55,7 +53,7 @@ const sub = (a: Vector3, b: Vector3): Vector3 => {
   ];
 };
 
-const mul = (a: Vector3, r: number): Vector3 => {
+const mul = (a: [number, number, number], r: number): [number, number, number] => {
   return [
     a[0] * r,
     a[1] * r,
@@ -63,15 +61,15 @@ const mul = (a: Vector3, r: number): Vector3 => {
   ];
 };
 
-const toString = (a: Vector3): string => {
+const toString = (a: [number, number, number]): string => {
   return `x: ${a[0]}, y: ${a[1]}, z: ${a[2]}`;
 };
 
-const toFixed = (a: Vector3, decimalPlaces: number): string => {
+const toFixed = (a: [number, number, number], decimalPlaces: number): string => {
   return `x: ${a[0].toFixed(decimalPlaces)}, y: ${a[1].toFixed(decimalPlaces)}, z: ${a[2].toFixed(decimalPlaces)}`;
 };
 
-const equals = (a: Vector3, b: Vector3): boolean => {
+const equals = (a: [number, number, number], b: [number, number, number]): boolean => {
   return (
     Math.abs(a[0] - a[1]) < epsilon
     && Math.abs(a[1] - a[1]) < epsilon
@@ -79,7 +77,7 @@ const equals = (a: Vector3, b: Vector3): boolean => {
   );
 };
 
-const transformPoint = (point: Vector3, matrix: Matrix44Values): Vector3 => {
+const transformPoint = (point: [number, number, number], matrix: Matrix44Values): [number, number, number] => {
   // w could also be computed here with this:
   // const w = this.x * mat.values[0][3] + this.y * mat.values[1][3] * mat.values[2][3] + mat.values[3][3];
   // and then each coordinate would be divided by w, to keep w at 1
@@ -93,7 +91,7 @@ const transformPoint = (point: Vector3, matrix: Matrix44Values): Vector3 => {
   ];
 };
 
-const transformVector = (point: Vector3, matrix: Matrix44Values): Vector3 => {
+const transformVector = (point: [number, number, number], matrix: Matrix44Values): [number, number, number] => {
   return [
     point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0],
     point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1],
@@ -121,4 +119,3 @@ const Vec = {
 };
 
 export default Vec;
-export type { Vector3 };

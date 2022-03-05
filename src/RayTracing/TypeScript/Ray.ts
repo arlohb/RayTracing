@@ -1,4 +1,4 @@
-import Vec, { Vector3 } from "./Vector3";
+import Vec from "./Vector3";
 
 type RayType = "primary" | "shadow";
 
@@ -6,10 +6,10 @@ class Ray {
   // this is not needed, but is nice to know
   type: RayType;
 
-  origin: Vector3;
-  direction: Vector3;
+  origin: [number, number, number];
+  direction: [number, number, number];
 
-  constructor(type: RayType, origin: Vector3, direction: Vector3) {
+  constructor(type: RayType, origin: [number, number, number], direction: [number, number, number]) {
     this.type = type;
     this.origin = origin;
 

@@ -57,7 +57,7 @@ const App = () => {
       flexDirection: windowSize.width > windowSize.height ? "row" : "column",
     }}
     >
-      <Viewport setMetrics={setMetrics} />
+      <Viewport setMetrics={setMetrics} renderer={renderer} />
       <div style={{ marginLeft: 20 }}>
         <div
           style={{

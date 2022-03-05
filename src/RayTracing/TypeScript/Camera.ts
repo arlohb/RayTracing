@@ -1,18 +1,18 @@
 import Matrix44 from "./Matrix44";
-import Vec, { Vector3 } from "./Vector3";
+import Vec from "./Vector3";
 
 // these are the centers of each edge
 type ImagePlane = {
-  left: Vector3,
-  right: Vector3,
-  bottom: Vector3,
-  top: Vector3,
-  center: Vector3,
+  left: [number, number, number],
+  right: [number, number, number],
+  bottom: [number, number, number],
+  top: [number, number, number],
+  center: [number, number, number],
 };
 
 class Camera {
-  from: Vector3;
-  to: Vector3;
+  from: [number, number, number];
+  to: [number, number, number];
   fov: number;
   width: number;
   height: number;
@@ -22,7 +22,7 @@ class Camera {
     return Matrix44.createFromVector3(right, up, forward, this.from);
   }
 
-  constructor(from: Vector3, to: Vector3, fov: number, width: number, height: number) {
+  constructor(from: [number, number, number], to: [number, number, number], fov: number, width: number, height: number) {
     this.from = from;
     this.to = to;
     this.fov = fov;
@@ -30,10 +30,10 @@ class Camera {
     this.height = height;
   }
 
-  getVectors(): [Vector3, Vector3, Vector3] {
+  getVectors(): [[number, number, number], [number, number, number], [number, number, number]] {
     const forward = Vec.normalize(Vec.sub(this.from, this.to));
 
-    const temp: Vector3 = [0, 1, 0];
+    const temp: [number, number, number] = [0, 1, 0];
     const right = Vec.normalize(Vec.cross(Vec.normalize(temp), forward));
 
     const up = Vec.normalize(Vec.cross(forward, right));

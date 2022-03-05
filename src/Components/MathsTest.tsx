@@ -1,10 +1,10 @@
-import Vec, { Vector3 } from "../RayTracing/TypeScript/Vector3";
+import Vec from "../RayTracing/TypeScript/Vector3";
 import Matrix44 from "../RayTracing/TypeScript/Matrix44";
 import Data from "./Data";
 
 const MathsTest = () => {
-  const PointA: Vector3 = [2, -7, 4];
-  const PointB: Vector3 = [-3, 9, -1];
+  const PointA: [number, number, number] = [2, -7, 4];
+  const PointB: [number, number, number] = [-3, 9, -1];
 
   const MatT = Matrix44.createScale(3).mul(Matrix44.createTranslation(1, 2, 3));
 

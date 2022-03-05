@@ -3,9 +3,8 @@ import { useRef, useEffect, useCallback, useState, useMemo } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, import/no-relative-packages
 import wasmInit, { get_image as RSRender } from "../RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
 
-import Vec, { Vector3 } from "../RayTracing/TypeScript/Vector3";
-import TSRender, { Scene } from "../RayTracing/TypeScript/RayTracer";
-import Sphere from "../RayTracing/TypeScript/Sphere";
+import Vec from "../RayTracing/TypeScript/Vector3";
+import TSRender from "../RayTracing/TypeScript/RayTracer";
 import { SphericalToCartesian } from "../RayTracing/TypeScript/SphericalCoords";
 import { PerformanceMetrics } from "../App";
 
@@ -43,17 +42,23 @@ const DrawImageToCanvas = (ctx: CanvasRenderingContext2D, image: [number, number
 };
 
 type RayTracerOptions = {
-  from: Vector3,
-  to: Vector3,
+  from: [number, number, number],
+  to: [number, number, number],
   fov: number,
   width: number,
   height: number,
-  scene: Scene,
+  scene: [
+    [number, number, number], // center
+    number, // radius
+  ][],
 };
 
 type Renderer = "rust" | "typescript";
 
-const Viewport = ({ setMetrics }: { setMetrics: (metrics: PerformanceMetrics) => void }) => {
+const Viewport = ({ setMetrics, renderer }: {
+  setMetrics: (metrics: PerformanceMetrics) => void,
+  renderer: Renderer,
+}) => {
   const [theta, setTheta] = useState(0);
   const [phi, setPhi] = useState(-0.6);
   const [orbitDistance, setOrbitDistance] = useState(10);
@@ -65,21 +70,22 @@ const Viewport = ({ setMetrics }: { setMetrics: (metrics: PerformanceMetrics) =>
     width: 400,
     height: 300,
     scene: [
-      new Sphere([0, 0, 0], 2),
-      new Sphere([5, 0, 0], 1),
-      new Sphere([0, 0, 5], 1),
-      new Sphere([-1, 0, 2], 1),
+      [[0, 0, 0], 2],
+      [[5, 0, 0], 1],
+      [[0, 0, 5], 1],
+      [[-1, 0, 2], 1],
     ],
   });
 
-  const rayTracer = useMemo<(from: Vector3, to: Vector3, fov: number, width: number, height: number, scene: Scene) => [number, number, number][][]>(() => {
-    // if (renderer === "typescript") {
-    //   return TSRender;
-    // } if (renderer === "rust") {
-    //   return RSRender;
-    // }
+  const rayTracer = useMemo<typeof RSRender>(() => {
+    if (renderer === "typescript") {
+      return TSRender;
+    } if (renderer === "rust") {
+      return RSRender;
+    }
+
     return TSRender;
-  }, []);
+  }, [renderer]);
 
   const ref = useRef<HTMLCanvasElement>(null);
 

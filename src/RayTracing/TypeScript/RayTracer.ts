@@ -1,28 +1,32 @@
 import { HexToPixel } from "../../Components/Viewport";
 import Camera from "./Camera";
 import Ray from "./Ray";
-import Sphere from "./Sphere";
-import Vec, { Vector3 } from "./Vector3";
+import { Sphere } from "./Objects";
+import Vec from "./Vector3";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const map = (v: number, min1: number, max1: number, min2: number, max2: number): number => {
   return min2 + ((v - min1) * (max2 - min1)) / (max1 - min1);
 };
 
-type Scene = Sphere[];
-
 type Hit = {
-  object: Sphere,
+  object: [
+    [number, number, number], // center
+    number, // radius
+  ],
   distance: number,
 };
 
 const render = (
-  from: Vector3,
-  to: Vector3,
+  from: [number, number, number],
+  to: [number, number, number],
   fov: number,
   width: number,
   height: number,
-  scene: Scene,
+  scene: [
+    [number, number, number], // center
+    number, // radius
+  ][],
 ): [number, number, number][][] => {
   const camera = new Camera(from, to, fov, width, height);
 
@@ -60,10 +64,10 @@ const render = (
 
       const ray = new Ray("primary", camera.from, direction);
 
-      let minHit: Hit = { object: new Sphere([0, 0, 0], 1), distance: 1e9 };
+      let minHit: Hit = { object: [[0, 0, 0], 1], distance: 1e9 };
 
       scene.forEach((sphere) => {
-        const distance = sphere.intersect(ray);
+        const distance = Sphere.intersect(sphere, ray);
 
         // if it hits
         if (distance !== null) {
@@ -78,7 +82,7 @@ const render = (
 
       if (minHit.distance !== 1e9) {
         const hitPoint = Vec.add(ray.origin, Vec.mul(ray.direction, minHit.distance));
-        const normal = minHit.object.normalAtPoint(hitPoint);
+        const normal = Sphere.normalAtPoint(minHit.object, hitPoint);
 
         const [,,forward] = camera.getVectors();
 
@@ -109,4 +113,3 @@ const render = (
 };
 
 export default render;
-export type { Scene };
