@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState, useMemo } from "react";
+import { useEffect, useCallback, useState, useMemo } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, import/no-relative-packages
 import wasmInit, { get_image as RSRender } from "../RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
