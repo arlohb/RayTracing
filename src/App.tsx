@@ -41,6 +41,7 @@ const App = () => {
   const windowSize = useWindowSize();
   const [showTests, setShowTests] = useState(false);
   const [renderer, setRenderer] = useState<Renderer>("typescript");
+  const [rollingFps, setRollingFps] = useState<number[]>(Array.from({ length: 20 }, () => 0));
 
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     total: 0,
@@ -57,7 +58,7 @@ const App = () => {
       flexDirection: windowSize.width > windowSize.height ? "row" : "column",
     }}
     >
-      <Viewport setMetrics={setMetrics} renderer={renderer} />
+      <Viewport setMetrics={setMetrics} renderer={renderer} setRollingFps={setRollingFps} />
       <div style={{ marginLeft: 20 }}>
         <div
           style={{
@@ -78,6 +79,7 @@ const App = () => {
         <Data
           title="Performance"
           data={{
+            AverageFps: `${(rollingFps.reduce((sum, element) => sum + element, 0) / rollingFps.length).toFixed(1)}`,
             Total: `${metrics.total.toFixed(1)} ms ${(1000 / metrics.total).toFixed(1)} fps`,
             Render: `${metrics.render.toFixed(1)} ms`,
             DrawToCanvas: `${metrics.drawToCanvas.toFixed(1)} ms`,

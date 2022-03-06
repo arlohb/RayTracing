@@ -30,9 +30,10 @@ type RayTracerOptions = {
 
 type Renderer = "rust" | "typescript";
 
-const Viewport = ({ setMetrics, renderer }: {
+const Viewport = ({ setMetrics, renderer, setRollingFps }: {
   setMetrics: (metrics: PerformanceMetrics) => void,
   renderer: Renderer,
+  setRollingFps: (newRollingFps: number[] | ((arg: number[]) => number[])) => void,
 }) => {
   const [theta, setTheta] = useState(0);
   const [phi, setPhi] = useState(-0.6);
@@ -80,8 +81,14 @@ const Viewport = ({ setMetrics, renderer }: {
     timer.drawToCanvas = performance.now() - timer.drawToCanvas;
     timer.total = performance.now() - timer.total;
 
+    setRollingFps((_rollingFps) => {
+      _rollingFps.shift();
+      _rollingFps.push(1000 / timer.total);
+      return _rollingFps;
+    });
+
     setMetrics(timer);
-  }, [rayTracer, options, setMetrics]);
+  }, [rayTracer, options, setMetrics, setRollingFps]);
 
   useEffect(() => {
     const position = Vec.mul(Vec.normalize(SphericalToCartesian(phi, theta)), orbitDistance);
