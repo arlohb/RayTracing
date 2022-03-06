@@ -73,7 +73,7 @@ fn draw_image(width: usize, height: usize) -> Result<(), Box<dyn std::error::Err
 }
 
 #[wasm_bindgen]
-pub fn get_image(
+pub fn rs_render(
     from: JsValue, // (f64, f64, f64),
     to: JsValue, // (f64, f64, f64),
     fov: u32,
@@ -98,7 +98,7 @@ const _TS: &str = r#"
 // HEY PARSER, SPLIT IT HERE!
 export function greet(): void;
 export function pass_value_to_js(): [string, number];
-export function get_image(
+export function rs_render(
     from: [number, number, number],
     to: [number, number, number],
     fov: number,
