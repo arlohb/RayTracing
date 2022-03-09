@@ -71,8 +71,8 @@ const toFixed = (a: [number, number, number], decimalPlaces: number): string => 
 
 const equals = (a: [number, number, number], b: [number, number, number]): boolean => {
   return (
-    Math.abs(a[0] - a[1]) < epsilon
-    && Math.abs(a[1] - a[1]) < epsilon
+    Math.abs(a[0] - b[0]) < epsilon
+    && Math.abs(a[1] - b[1]) < epsilon
     && Math.abs(a[2] - b[2]) < epsilon
   );
 };
