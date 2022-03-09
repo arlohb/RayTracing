@@ -2,6 +2,10 @@ mod utils;
 
 use wasm_bindgen::{prelude::*, JsCast, Clamped};
 
+mod maths;
+pub use crate::maths::Vec3;
+pub use crate::maths::Mat44;
+
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
