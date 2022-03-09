@@ -2,9 +2,9 @@ use std::ops;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
-  x: f64,
-  y: f64,
-  z: f64,
+  pub x: f64,
+  pub y: f64,
+  pub z: f64,
 }
 
 impl Vec3 {
@@ -157,16 +157,5 @@ impl PartialEq for Vec3 {
     (self.x - other.x).abs() < Vec3::EPSILON
     && (self.y - other.y).abs() < Vec3::EPSILON
     && (self.z - other.z).abs() < Vec3::EPSILON
-  }
-}
-
-pub struct Mat44 {
-  data: [[f64; 4]; 4],
-}
-
-impl ops::Index<usize> for Mat44 {
-  type Output = [f64; 4];
-  fn index(&self, index: usize) -> &[f64; 4] {
-    &self.data[index]
   }
 }
