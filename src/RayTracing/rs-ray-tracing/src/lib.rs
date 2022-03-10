@@ -74,7 +74,6 @@ pub fn draw_image(image: Clamped<&[u8]>, width: u32, height: u32) -> Result<(), 
 fn render_pixel(
     x: u32,
     y: u32,
-    image_plane: &ImagePlane,
     top_left: Vec3,
     width_world_space: f64,
     height_world_space: f64,
@@ -193,7 +192,7 @@ pub fn rs_render(
 
     for x in 0..width {
         for y in 0..height {
-            let pixel = render_pixel(x, y, &image_plane, top_left_point, width_world_space, height_world_space, right, up, width, height, &camera, &scene);
+            let pixel = render_pixel(x, y, top_left_point, width_world_space, height_world_space, right, up, width, height, &camera, &scene);
 
             let index = 4 * (x + (y * width)) as usize;
             image[index] = pixel.0;
