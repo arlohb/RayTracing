@@ -1,5 +1,9 @@
 pub use crate::vec3::Vec3;
 
+use crate::log;
+use crate::console_log;
+
+#[derive (Debug)]
 pub struct ImagePlane {
   pub left: Vec3,
   pub right: Vec3,
@@ -30,7 +34,7 @@ impl Camera {
 
     pub fn get_image_plane(&self) -> ImagePlane {
       // working for this is in whiteboard
-      let fov_rad = self.fov * (std::f64::consts::PI);
+      let fov_rad = self.fov * (std::f64::consts::PI / 180.);
       let width = 2. * f64::tan(fov_rad / 2.);
       let half_width = width / 2.;
 

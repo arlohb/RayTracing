@@ -37,9 +37,10 @@ extern "C" {
     // Use `js_namespace` here to bind `console.log(..)` instead of just
     // `log(..)`
     #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
+    pub fn log(s: &str);
 }
 
+#[macro_export]
 macro_rules! console_log {
     // Note that this is using the `log` function imported above during
     // `bare_bones`
@@ -183,7 +184,7 @@ pub fn rs_render(
 
     let width_world_space = (image_plane.right - image_plane.left).length();
     let height_world_space = (image_plane.top - image_plane.bottom).length();
-    let (right, up, _) = camera.get_vectors();   
+    let (right, up, _) = camera.get_vectors();
     
     let data = web_sys::ImageData::new_with_sw(width as u32, height as u32)
         .map_err(|_| "Image creation failed")?;
