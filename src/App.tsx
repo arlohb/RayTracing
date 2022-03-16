@@ -6,12 +6,6 @@ import MathsTest from "./Components/MathsTest";
 import { useWindowSize } from "./Hooks";
 import Text from "./Components/Text";
 
-type PerformanceMetrics = {
-  total: number,
-  render: number,
-  drawToCanvas: number,
-};
-
 const RendererButton = ({ setRenderer, name, renderer }: {
   setRenderer: (newRenderer: Renderer) => void,
   name: Renderer,
@@ -43,11 +37,7 @@ const App = () => {
   const [renderer, setRenderer] = useState<Renderer>("typescript");
   const [rollingFps, setRollingFps] = useState<number[]>(Array.from({ length: 20 }, () => 0));
 
-  const [metrics, setMetrics] = useState<PerformanceMetrics>({
-    total: 0,
-    render: 0,
-    drawToCanvas: 0,
-  });
+  const [fps, setFps] = useState(0);
 
   return (
     <div style={{
@@ -58,7 +48,7 @@ const App = () => {
       flexDirection: windowSize.width > windowSize.height ? "row" : "column",
     }}
     >
-      <Viewport setMetrics={setMetrics} renderer={renderer} setRollingFps={setRollingFps} />
+      <Viewport setFps={setFps} renderer={renderer} setRollingFps={setRollingFps} />
       <div style={{ marginLeft: 20 }}>
         <div
           style={{
@@ -80,9 +70,7 @@ const App = () => {
           title="Performance"
           data={{
             AverageFps: `${(rollingFps.reduce((sum, element) => sum + element, 0) / rollingFps.length).toFixed(1)}`,
-            Total: `${metrics.total.toFixed(1)} ms ${(1000 / metrics.total).toFixed(1)} fps`,
-            Render: `${metrics.render.toFixed(1)} ms`,
-            DrawToCanvas: `${metrics.drawToCanvas.toFixed(1)} ms`,
+            Fps: `${fps} fps`,
           }}
         />
 
@@ -113,4 +101,3 @@ const App = () => {
 };
 
 export default App;
-export type { PerformanceMetrics };

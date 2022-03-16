@@ -6,7 +6,6 @@ import wasmInit, { rs_render as RSRender } from "../RayTracing/rs-ray-tracing/pk
 import Vec from "../RayTracing/TypeScript/Vector3";
 import TSRender from "../RayTracing/TypeScript/RayTracer";
 import { SphericalToCartesian } from "../RayTracing/TypeScript/SphericalCoords";
-import { PerformanceMetrics } from "../App";
 
 const HexToPixel = (hex: string): [number, number, number] => (
   [
@@ -30,8 +29,8 @@ type RayTracerOptions = {
 
 type Renderer = "rust" | "typescript";
 
-const Viewport = ({ setMetrics, renderer, setRollingFps }: {
-  setMetrics: (metrics: PerformanceMetrics) => void,
+const Viewport = ({ setFps, renderer, setRollingFps }: {
+  setFps: (fps: number) => void,
   renderer: Renderer,
   setRollingFps: (newRollingFps: number[] | ((arg: number[]) => number[])) => void,
 }) => {
@@ -64,31 +63,20 @@ const Viewport = ({ setMetrics, renderer, setRollingFps }: {
   }, [renderer]);
 
   const draw = useCallback((): void => {
-    const timer: PerformanceMetrics = {
-      total: 0,
-      render: 0,
-      drawToCanvas: 0,
-    };
-
-    timer.total = performance.now();
-    timer.render = performance.now();
+    let timer = performance.now();
 
     rayTracer(options.from, options.to, options.fov, options.width, options.height, options.scene);
 
-    timer.render = performance.now() - timer.render;
-    timer.drawToCanvas = performance.now();
-
-    timer.drawToCanvas = performance.now() - timer.drawToCanvas;
-    timer.total = performance.now() - timer.total;
+    timer = performance.now() - timer;
 
     setRollingFps((_rollingFps) => {
       _rollingFps.shift();
-      _rollingFps.push(1000 / timer.total);
+      _rollingFps.push(1000 / timer);
       return _rollingFps;
     });
 
-    setMetrics(timer);
-  }, [rayTracer, options, setMetrics, setRollingFps]);
+    setFps(Math.round(10000 / timer) / 10);
+  }, [rayTracer, options, setFps, setRollingFps]);
 
   useEffect(() => {
     const position = Vec.mul(Vec.normalize(SphericalToCartesian(phi, theta)), orbitDistance);
