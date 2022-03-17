@@ -16,6 +16,8 @@ pub use crate::sphere::Sphere;
 
 mod solver;
 
+const BACKGROUND_COLOUR: (u8, u8, u8) = (127, 200, 255);
+
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -71,6 +73,35 @@ pub fn draw_image(image: Clamped<&[u8]>, width: u32, height: u32) -> Result<(), 
     Ok(())
 }
 
+fn trace_ray(
+    ray: &Ray,
+    scene: &Vec<Sphere>,
+) -> Option<(Sphere, Vec3)> {
+    let mut min_hit_distance = 1e9;
+    let mut min_hit_object: Option<&Sphere> = None;
+
+    for object in scene {
+        let distance = match object.intersect(&ray) {
+            Some(d) => d,
+            None => continue
+        };
+
+        if distance < min_hit_distance {
+            min_hit_distance = distance;
+            min_hit_object = Some(object);
+        }
+    }
+
+    match min_hit_object {
+        Some(object) => {
+            let hit_point = ray.origin + (ray.direction * min_hit_distance);
+
+            Some((*object, hit_point))
+        }
+        None => None
+    }
+}
+
 fn render_pixel(
     x: u32,
     y: u32,
@@ -100,24 +131,8 @@ fn render_pixel(
         direction
     };
 
-    let mut min_hit_distance = 1e9;
-    let mut min_hit_object: Option<&Sphere> = None;
-
-    for object in scene {
-        let distance = match object.intersect(&ray) {
-            Some(d) => d,
-            None => continue
-        };
-
-        if distance < min_hit_distance {
-            min_hit_distance = distance;
-            min_hit_object = Some(object);
-        }
-    }
-
-    match min_hit_object {
-        Some(object) => {
-            let hit_point = ray.origin + (ray.direction * min_hit_distance);
+    match trace_ray(&ray, scene) {
+        Some((object, hit_point)) => {
             let normal = object.normal_at_point(hit_point);
 
             let (_, _, forward) = camera.get_vectors();
@@ -132,13 +147,7 @@ fn render_pixel(
                 (brightness * 255.) as u8
             )
         },
-        None => {
-            (
-                0,
-                0,
-                0
-            )
-        }
+        None => BACKGROUND_COLOUR
     }
 }
 

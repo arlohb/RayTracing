@@ -2,6 +2,7 @@ use crate::vec3::Vec3;
 use crate::ray::Ray;
 pub use crate::solver::solve_quadratic;
 
+#[derive(Clone, Copy)]
 pub struct Sphere {
   pub center: Vec3,
   pub radius: f64,
