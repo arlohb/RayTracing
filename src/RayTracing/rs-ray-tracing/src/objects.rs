@@ -49,7 +49,7 @@ pub struct PointLight {
 }
 
 impl LightData for PointLight {
-  fn intensity(&self, point: Vec3) -> (f64, f64, f64) {
+  fn intensity(&self, _: Vec3) -> (f64, f64, f64) {
     self.intensity
   }
   fn direction(&self, point: Vec3) -> Vec3 {
@@ -63,10 +63,10 @@ pub struct DirectionLight {
 }
 
 impl LightData for DirectionLight {
-  fn intensity(&self, point: Vec3) -> (f64, f64, f64) {
+  fn intensity(&self, _: Vec3) -> (f64, f64, f64) {
     self.intensity
   }
-  fn direction(&self, point: Vec3) -> Vec3 {
+  fn direction(&self, _: Vec3) -> Vec3 {
     self.direction
   }
 }

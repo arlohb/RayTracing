@@ -89,7 +89,7 @@ fn calculate_light(
         let intensity = light.intensity(point);
         let light_direction = light.direction(point);
 
-        let strength = normal.dot(light_direction) / (normal.length() * light_direction.length());
+        let strength = (normal.dot(light_direction) / (normal.length() * light_direction.length())).clamp(0., 1.);
 
         result.0 += intensity.0 * strength;
         result.1 += intensity.1 * strength;
@@ -206,7 +206,7 @@ pub fn rs_render(
             // }),
             Box::new(DirectionLight {
                 direction: (Vec3 { x: 1., y: -0.5, z: 0. }).normalize(),
-                intensity: (1., 0., 1.),
+                intensity: (1., 1., 1.),
             })
         ]
     );
