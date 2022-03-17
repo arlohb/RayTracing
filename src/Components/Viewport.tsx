@@ -25,6 +25,7 @@ type RayTracerOptions = {
     [number, number, number], // center
     number, // radius
     [number, number, number], // colour
+    number, // specular
   ][],
 };
 
@@ -46,10 +47,10 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
     width: 400,
     height: 300,
     scene: [
-      [[0, -3, 0], 2, [255, 0, 0]],
-      [[5, 0, 0], 1, [0, 0, 255]],
-      [[0, 0, 5], 1, [0, 255, 0]],
-      [[-1, 0, 2], 1, [255, 255, 255]],
+      [[0, -3, 0], 2, [255, 0, 0], 10],
+      [[5, 0, 0], 1, [0, 0, 255], 500],
+      [[0, 0, 5], 1, [0, 255, 0], 500],
+      [[-1, 0, 2], 1, [255, 255, 255], 1000],
     ],
   });
 

@@ -3,10 +3,16 @@ use crate::ray::Ray;
 pub use crate::solver::solve_quadratic;
 
 #[derive(Clone, Copy)]
+pub struct Material {
+  pub colour: (f64, f64, f64),
+  pub specular: f64,
+}
+
+#[derive(Clone, Copy)]
 pub struct Sphere {
   pub center: Vec3,
   pub radius: f64,
-  pub colour: (u8, u8, u8)
+  pub material: Material,
 }
 
 impl Sphere {

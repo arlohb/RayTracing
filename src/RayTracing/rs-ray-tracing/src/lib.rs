@@ -1,5 +1,6 @@
 mod utils;
 
+use objects::Material;
 use wasm_bindgen::{prelude::*, JsCast, Clamped};
 
 mod vec3;
@@ -88,6 +89,8 @@ impl RayTracer {
         &self,
         point: Vec3,
         normal: Vec3,
+        camera_pos: Vec3,
+        material: Material,
     ) -> (f64, f64, f64) {
         let mut result = (
             AMBIENT_LIGHT.0,
@@ -99,11 +102,18 @@ impl RayTracer {
             let intensity = light.intensity(point);
             let light_direction = light.direction(point);
 
-            let strength = (normal.dot(light_direction) / (normal.length() * light_direction.length())).clamp(0., 1.);
+            let strength = (normal.dot(light_direction)
+                / (normal.length() * light_direction.length())).clamp(0., 1.);
+            
+            let reflection_vector = (normal * normal.dot(light_direction)) * 2. - light_direction;
+            let camera_vector = camera_pos - point;
 
-            result.0 += intensity.0 * strength;
-            result.1 += intensity.1 * strength;
-            result.2 += intensity.2 * strength;
+            let specular = (reflection_vector.dot(camera_vector)
+                / (reflection_vector.length() * camera_vector.length())).clamp(0., 1.).powf(material.specular);
+
+            result.0 += intensity.0 * (strength + specular);
+            result.1 += intensity.1 * (strength + specular);
+            result.2 += intensity.2 * (strength + specular);
         }
 
         result
@@ -169,11 +179,11 @@ impl RayTracer {
             Some((object, hit_point)) => {
                 let normal = object.normal_at_point(hit_point);
 
-                let brightness = self.calculate_light(hit_point, normal);
+                let brightness = self.calculate_light(hit_point, normal, camera.from, object.material);
                 (
-                    (brightness.0 * object.colour.0 as f64) as u8,
-                    (brightness.1 * object.colour.1 as f64) as u8,
-                    (brightness.2 * object.colour.2 as f64) as u8
+                    (brightness.0 * object.material.colour.0 * 255.) as u8,
+                    (brightness.1 * object.material.colour.1 * 255.) as u8,
+                    (brightness.2 * object.material.colour.2 * 255.) as u8
                 )
             },
             None => BACKGROUND_COLOUR
@@ -231,7 +241,7 @@ pub fn rs_render(
     fov: f64,
     width: u32,
     height: u32,
-    scene: JsValue, // Vec<((f64, f64, f64), f64, (u8, u8, u8))>,
+    scene: JsValue, // Vec<((f64, f64, f64), f64, (u8, u8, u8), f64)>,
 ) -> Result<(), JsValue> {
     let ray_tracer = RayTracer {
         from: {
@@ -246,7 +256,7 @@ pub fn rs_render(
         width,
         height,
         scene: {
-            let scene: Vec<((f64, f64, f64), f64, (u8, u8, u8))> = serde_wasm_bindgen::from_value(scene)?;
+            let scene: Vec<((f64, f64, f64), f64, (u8, u8, u8), f64)> = serde_wasm_bindgen::from_value(scene)?;
 
             (
                 {
@@ -255,7 +265,10 @@ pub fn rs_render(
                         objects.push(Sphere {
                             center: Vec3 { x: object.0.0, y: object.0.1, z: object.0.2 },
                             radius: object.1,
-                            colour: object.2,
+                            material: Material {
+                                colour: (object.2.0 as f64 / 255., object.2.1 as f64 / 255., object.2.2 as f64 / 255.),
+                                specular: object.3,
+                            }
                         });
                     }
                     objects
@@ -291,6 +304,7 @@ export function rs_render(
         [number, number, number], // center
         number, // radius
         [number, number, number], // colour
+        number, // specular
     ][],
 ): void
 "#;
