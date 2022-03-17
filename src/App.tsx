@@ -3,7 +3,6 @@ import { useState } from "react";
 import Viewport, { Renderer } from "./Components/Viewport";
 import Data from "./Components/Data";
 import { useWindowSize } from "./Hooks";
-import Text from "./Components/Text";
 
 const RendererButton = ({ setRenderer, name, renderer }: {
   setRenderer: (newRenderer: Renderer) => void,
