@@ -280,7 +280,7 @@ pub fn rs_render(
                     // }),
                     Box::new(DirectionLight {
                         direction: (Vec3 { x: 1., y: -0.5, z: 0. }).normalize(),
-                        intensity: (1., 1., 1.),
+                        intensity: (0.8, 0.8, 0.8),
                     })
                 ]
             )
