@@ -60,7 +60,7 @@ struct RayTracer {
 }
 
 impl RayTracer {
-    pub fn draw_image(&self, image: Clamped<&[u8]>, width: u32, height: u32) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn draw_image(&self, image: Clamped<&[u8]>) -> Result<(), Box<dyn std::error::Error>> {
         let document = web_sys::window().ok_or("No window")?
             .document()
             .ok_or("No document")?;
@@ -76,7 +76,7 @@ impl RayTracer {
             .dyn_into::<web_sys::CanvasRenderingContext2d>()
             .unwrap();
         
-        let new_data = web_sys::ImageData::new_with_u8_clamped_array_and_sh(image, width, height)
+        let new_data = web_sys::ImageData::new_with_u8_clamped_array_and_sh(image, self.width, self.height)
             .map_err(|_| "New data failed")?;
         
         context.put_image_data(&new_data, 0., 0.).map_err(|_| "Image put failed")?;
@@ -217,7 +217,7 @@ impl RayTracer {
 
         let image = Clamped(&image as &[u8]);
 
-        self.draw_image(image, self.width, self.height)
+        self.draw_image(image)
             .map_err(|e| e.to_string())?;
 
         Ok(())
