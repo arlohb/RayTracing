@@ -142,9 +142,9 @@ fn render_pixel(
 
             let brightness = 1. - (angle / std::f64::consts::PI);
             (
-                (brightness * 255.) as u8,
-                (brightness * 255.) as u8,
-                (brightness * 255.) as u8
+                (brightness * object.colour.0 as f64) as u8,
+                (brightness * object.colour.1 as f64) as u8,
+                (brightness * object.colour.2 as f64) as u8
             )
         },
         None => BACKGROUND_COLOUR
@@ -158,13 +158,13 @@ pub fn rs_render(
     fov: f64,
     width: u32,
     height: u32,
-    scene: JsValue, // Vec<((f64, f64, f64), f64)>,
+    scene: JsValue, // Vec<((f64, f64, f64), f64, (u8, u8, u8))>,
 ) -> Result<(), JsValue> {
     let from: (f64, f64, f64) = serde_wasm_bindgen::from_value(from)?;
     let from = Vec3 { x: from.0, y: from.1, z: from.2 };
     let to: (f64, f64, f64) = serde_wasm_bindgen::from_value(to)?;
     let to = Vec3 { x: to.0, y: to.1, z: to.2 };
-    let scene: Vec<((f64, f64, f64), f64)> = serde_wasm_bindgen::from_value(scene)?;
+    let scene: Vec<((f64, f64, f64), f64, (u8, u8, u8))> = serde_wasm_bindgen::from_value(scene)?;
 
     let scene: Vec<Sphere> = {
         let mut objects: Vec<Sphere> = vec![];
@@ -172,6 +172,7 @@ pub fn rs_render(
             objects.push(Sphere {
                 center: Vec3 { x: object.0.0, y: object.0.1, z: object.0.2 },
                 radius: object.1,
+                colour: object.2,
             });
         }
         objects
@@ -233,6 +234,7 @@ export function rs_render(
     scene: [
         [number, number, number], // center
         number, // radius
+        [number, number, number], // colour
     ][],
 ): void
 "#;

@@ -3,7 +3,7 @@ import { SolveQuadratic } from "./Solver";
 import Vec from "./Vector3";
 
 const Sphere = {
-  intersect: (sphere: [[number, number, number], number], ray: Ray): number | null => {
+  intersect: (sphere: [[number, number, number], number, [number, number, number]], ray: Ray): number | null => {
     // working out in whiteboard
     const newOrigin = Vec.sub(ray.origin, sphere[0]);
 
@@ -22,7 +22,7 @@ const Sphere = {
     // return the minimum
     return solutions[0] < solutions[1] ? solutions[0] : solutions[1];
   },
-  normalAtPoint: (sphere: [[number, number, number], number], point: [number, number, number]): [number, number, number] => {
+  normalAtPoint: (sphere: [[number, number, number], number, [number, number, number]], point: [number, number, number]): [number, number, number] => {
     // simple circle stuff
     const normal = Vec.normalize(Vec.sub(point, sphere[0]));
     return normal;

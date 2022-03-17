@@ -24,6 +24,7 @@ type RayTracerOptions = {
   scene: [
     [number, number, number], // center
     number, // radius
+    [number, number, number], // colour
   ][],
 };
 
@@ -45,10 +46,10 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
     width: 400,
     height: 300,
     scene: [
-      [[0, 0, 0], 2],
-      [[5, 0, 0], 1],
-      [[0, 0, 5], 1],
-      [[-1, 0, 2], 1],
+      [[0, 0, 0], 2, [255, 0, 0]],
+      [[5, 0, 0], 1, [0, 0, 255]],
+      [[0, 0, 5], 1, [0, 255, 0]],
+      [[-1, 0, 2], 1, [255, 255, 255]],
     ],
   });
 

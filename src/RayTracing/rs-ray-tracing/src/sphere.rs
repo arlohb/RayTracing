@@ -6,6 +6,7 @@ pub use crate::solver::solve_quadratic;
 pub struct Sphere {
   pub center: Vec3,
   pub radius: f64,
+  pub colour: (u8, u8, u8)
 }
 
 impl Sphere {

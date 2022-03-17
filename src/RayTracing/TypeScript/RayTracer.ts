@@ -13,6 +13,7 @@ type Hit = {
   object: [
     [number, number, number], // center
     number, // radius
+    [number, number, number], // colour
   ],
   distance: number,
 };
@@ -26,6 +27,7 @@ const render = (
   scene: [
     [number, number, number], // center
     number, // radius
+    [number, number, number], // colour
   ][],
 ): void => {
   const camera = new Camera(from, to, fov, width, height);
@@ -64,7 +66,7 @@ const render = (
 
       const ray = new Ray("primary", camera.from, direction);
 
-      let minHit: Hit = { object: [[0, 0, 0], 1], distance: 1e9 };
+      let minHit: Hit = { object: [[0, 0, 0], 1, [0, 0, 0]], distance: 1e9 };
 
       scene.forEach((sphere) => {
         const distance = Sphere.intersect(sphere, ray);
