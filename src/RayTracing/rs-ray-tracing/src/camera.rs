@@ -1,8 +1,5 @@
 pub use crate::vec3::Vec3;
 
-use crate::log;
-use crate::console_log;
-
 #[derive (Debug)]
 pub struct ImagePlane {
   pub left: Vec3,
