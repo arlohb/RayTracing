@@ -17,7 +17,7 @@ pub use crate::objects::{Sphere, LightData, PointLight, DirectionLight};
 
 mod solver;
 
-const BACKGROUND_COLOUR: (u8, u8, u8) = (127, 200, 255);
+const BACKGROUND_COLOUR: (f64, f64, f64) = (0.5, 0.8, 1.);
 const AMBIENT_LIGHT: (f64, f64, f64) = (0.2, 0.2, 0.2);
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -158,7 +158,7 @@ impl RayTracer {
         right: Vec3,
         up: Vec3,
         camera: &Camera,
-    ) -> (u8, u8, u8) {
+    ) -> (f64, f64, f64) {
         let x_screen_space = (x as f64 + 0.5) / self.width as f64;
         let y_screen_space = (y as f64 + 0.5) / self.height as f64;
 
@@ -181,9 +181,9 @@ impl RayTracer {
 
                 let brightness = self.calculate_light(hit_point, normal, camera.from, object.material);
                 (
-                    (brightness.0 * object.material.colour.0 * 255.) as u8,
-                    (brightness.1 * object.material.colour.1 * 255.) as u8,
-                    (brightness.2 * object.material.colour.2 * 255.) as u8
+                    brightness.0 * object.material.colour.0,
+                    brightness.1 * object.material.colour.1,
+                    brightness.2 * object.material.colour.2,
                 )
             },
             None => BACKGROUND_COLOUR
@@ -218,9 +218,9 @@ impl RayTracer {
                 let pixel = self.render_pixel(x, y, top_left_point, width_world_space, height_world_space, right, up, &camera);
 
                 let index = 4 * (x + (y * self.width)) as usize;
-                image[index] = pixel.0;
-                image[index + 1] = pixel.1;
-                image[index + 2] = pixel.2;
+                image[index] = (pixel.0 * 255.) as u8;
+                image[index + 1] = (pixel.1 * 255.) as u8;
+                image[index + 2] = (pixel.2 * 255.) as u8;
                 image[index + 3] = 255;
             }
         }
@@ -241,7 +241,7 @@ pub fn rs_render(
     fov: f64,
     width: u32,
     height: u32,
-    scene: JsValue, // Vec<((f64, f64, f64), f64, (u8, u8, u8), f64)>,
+    scene: JsValue, // Vec<((f64, f64, f64), f64, (f64, f64, f64), f64)>,
 ) -> Result<(), JsValue> {
     let ray_tracer = RayTracer {
         from: {
@@ -256,7 +256,7 @@ pub fn rs_render(
         width,
         height,
         scene: {
-            let scene: Vec<((f64, f64, f64), f64, (u8, u8, u8), f64)> = serde_wasm_bindgen::from_value(scene)?;
+            let scene: Vec<((f64, f64, f64), f64, (f64, f64, f64), f64)> = serde_wasm_bindgen::from_value(scene)?;
 
             (
                 {
@@ -266,7 +266,7 @@ pub fn rs_render(
                             center: Vec3 { x: object.0.0, y: object.0.1, z: object.0.2 },
                             radius: object.1,
                             material: Material {
-                                colour: (object.2.0 as f64 / 255., object.2.1 as f64 / 255., object.2.2 as f64 / 255.),
+                                colour: object.2,
                                 specular: object.3,
                             }
                         });
