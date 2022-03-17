@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import Viewport, { Renderer } from "./Components/Viewport";
 import Data from "./Components/Data";
-import MathsTest from "./Components/MathsTest";
 import { useWindowSize } from "./Hooks";
 import Text from "./Components/Text";
 
@@ -33,7 +32,6 @@ const RendererButton = ({ setRenderer, name, renderer }: {
 
 const App = () => {
   const windowSize = useWindowSize();
-  const [showTests, setShowTests] = useState(false);
   const [renderer, setRenderer] = useState<Renderer>("typescript");
   const [rollingFps, setRollingFps] = useState<number[]>(Array.from({ length: 20 }, () => 0));
 
@@ -73,28 +71,6 @@ const App = () => {
             Fps: `${fps} fps`,
           }}
         />
-
-        <div style={{
-          marginTop: 20,
-          marginBottom: 20,
-          display: "flex",
-          flexDirection: "row",
-        }}
-        >
-          <input
-            style={{
-              flex: 1,
-            }}
-            type="checkbox"
-            onChange={() => setShowTests(!showTests)}
-            checked={showTests}
-          />
-          <Text style={{ flex: 10 }}>Show Maths Tests</Text>
-        </div>
-
-        {showTests && (
-          <MathsTest />
-        )}
       </div>
     </div>
   );
