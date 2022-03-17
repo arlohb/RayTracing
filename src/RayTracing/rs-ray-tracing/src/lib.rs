@@ -17,6 +17,7 @@ pub use crate::sphere::Sphere;
 mod solver;
 
 const BACKGROUND_COLOUR: (u8, u8, u8) = (127, 200, 255);
+const AMBIENT_LIGHT: (f64, f64, f64) = (0.2, 0.2, 0.2);
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -71,6 +72,26 @@ pub fn draw_image(image: Clamped<&[u8]>, width: u32, height: u32) -> Result<(), 
     context.put_image_data(&new_data, 0., 0.).map_err(|_| "Image put failed")?;
 
     Ok(())
+}
+
+fn calculate_light(
+    point: Vec3,
+    normal: Vec3,
+) -> (f64, f64, f64) {
+    // light is at (0, 0, 0) with intensity 0.6 for this demonstration
+    let position = Vec3 { x: 0., y: 2., z: 0. };
+    let intensity: (f64, f64, f64) = (0.8, 0.8, 0.8);
+    let light_direction = position - point;
+
+    let strength = normal.dot(light_direction) / (normal.length() * light_direction.length());
+
+    let light_result = (
+        AMBIENT_LIGHT.0 + (intensity.0 * strength),
+        AMBIENT_LIGHT.1 + (intensity.1 * strength),
+        AMBIENT_LIGHT.2 + (intensity.2 * strength),
+    );
+
+    light_result
 }
 
 fn trace_ray(
@@ -135,16 +156,11 @@ fn render_pixel(
         Some((object, hit_point)) => {
             let normal = object.normal_at_point(hit_point);
 
-            let (_, _, forward) = camera.get_vectors();
-
-            // normal length can be left out as it will always be 1
-            let angle = (forward.dot(normal) / forward.length()).acos();
-
-            let brightness = 1. - (angle / std::f64::consts::PI);
+            let brightness = calculate_light(hit_point, normal);
             (
-                (brightness * object.colour.0 as f64) as u8,
-                (brightness * object.colour.1 as f64) as u8,
-                (brightness * object.colour.2 as f64) as u8
+                (brightness.0 * object.colour.0 as f64) as u8,
+                (brightness.1 * object.colour.1 as f64) as u8,
+                (brightness.2 * object.colour.2 as f64) as u8
             )
         },
         None => BACKGROUND_COLOUR
