@@ -11,8 +11,8 @@ pub use crate::camera::{Camera, ImagePlane};
 mod ray;
 pub use crate::ray::Ray;
 
-mod sphere;
-pub use crate::sphere::Sphere;
+mod objects;
+pub use crate::objects::{Sphere, LightData, PointLight, DirectionLight};
 
 mod solver;
 
@@ -77,31 +77,36 @@ pub fn draw_image(image: Clamped<&[u8]>, width: u32, height: u32) -> Result<(), 
 fn calculate_light(
     point: Vec3,
     normal: Vec3,
+    scene: &(Vec<Sphere>, Vec<Box<dyn LightData>>),
 ) -> (f64, f64, f64) {
-    // light is at (0, 0, 0) with intensity 0.6 for this demonstration
-    let position = Vec3 { x: 0., y: 2., z: 0. };
-    let intensity: (f64, f64, f64) = (0.8, 0.8, 0.8);
-    let light_direction = position - point;
-
-    let strength = normal.dot(light_direction) / (normal.length() * light_direction.length());
-
-    let light_result = (
-        AMBIENT_LIGHT.0 + (intensity.0 * strength),
-        AMBIENT_LIGHT.1 + (intensity.1 * strength),
-        AMBIENT_LIGHT.2 + (intensity.2 * strength),
+    let mut result = (
+        AMBIENT_LIGHT.0,
+        AMBIENT_LIGHT.1,
+        AMBIENT_LIGHT.2,
     );
 
-    light_result
+    for light in scene.1.iter() {
+        let intensity = light.intensity(point);
+        let light_direction = light.direction(point);
+
+        let strength = normal.dot(light_direction) / (normal.length() * light_direction.length());
+
+        result.0 += intensity.0 * strength;
+        result.1 += intensity.1 * strength;
+        result.2 += intensity.2 * strength;
+    }
+
+    result
 }
 
 fn trace_ray(
     ray: &Ray,
-    scene: &Vec<Sphere>,
+    scene: &(Vec<Sphere>, Vec<Box<dyn LightData>>),
 ) -> Option<(Sphere, Vec3)> {
     let mut min_hit_distance = 1e9;
     let mut min_hit_object: Option<&Sphere> = None;
 
-    for object in scene {
+    for object in &scene.0 {
         let distance = match object.intersect(&ray) {
             Some(d) => d,
             None => continue
@@ -134,7 +139,7 @@ fn render_pixel(
     width: u32,
     height: u32,
     camera: &Camera,
-    scene: &Vec<Sphere>,
+    scene: &(Vec<Sphere>, Vec<Box<dyn LightData>>),
 ) -> (u8, u8, u8) {
     let x_screen_space = (x as f64 + 0.5) / width as f64;
     let y_screen_space = (y as f64 + 0.5) / height as f64;
@@ -156,7 +161,7 @@ fn render_pixel(
         Some((object, hit_point)) => {
             let normal = object.normal_at_point(hit_point);
 
-            let brightness = calculate_light(hit_point, normal);
+            let brightness = calculate_light(hit_point, normal, scene);
             (
                 (brightness.0 * object.colour.0 as f64) as u8,
                 (brightness.1 * object.colour.1 as f64) as u8,
@@ -182,17 +187,29 @@ pub fn rs_render(
     let to = Vec3 { x: to.0, y: to.1, z: to.2 };
     let scene: Vec<((f64, f64, f64), f64, (u8, u8, u8))> = serde_wasm_bindgen::from_value(scene)?;
 
-    let scene: Vec<Sphere> = {
-        let mut objects: Vec<Sphere> = vec![];
-        for object in scene {
-            objects.push(Sphere {
-                center: Vec3 { x: object.0.0, y: object.0.1, z: object.0.2 },
-                radius: object.1,
-                colour: object.2,
-            });
-        }
-        objects
-    };
+    let scene: (Vec<Sphere>, Vec<Box<dyn LightData>>) = (
+        {
+            let mut objects: Vec<Sphere> = vec![];
+            for object in scene {
+                objects.push(Sphere {
+                    center: Vec3 { x: object.0.0, y: object.0.1, z: object.0.2 },
+                    radius: object.1,
+                    colour: object.2,
+                });
+            }
+            objects
+        },
+        vec![
+            // Box::new(PointLight {
+            //     position: Vec3 { x: 0., y: 2., z: 0. },
+            //     intensity: (0.6, 0.6, 0.6),
+            // }),
+            Box::new(DirectionLight {
+                direction: (Vec3 { x: 1., y: -0.5, z: 0. }).normalize(),
+                intensity: (1., 0., 1.),
+            })
+        ]
+    );
 
     let camera = Camera {
         from,
