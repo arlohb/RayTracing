@@ -10,12 +10,7 @@ const map = (v: number, min1: number, max1: number, min2: number, max2: number):
 };
 
 type Hit = {
-  object: [
-    [number, number, number], // center
-    number, // radius
-    [number, number, number], // colour
-    number, // specular
-  ],
+  object: Sphere | null,
   distance: number,
 };
 
@@ -25,12 +20,7 @@ const render = (
   fov: number,
   width: number,
   height: number,
-  scene: [
-    [number, number, number], // center
-    number, // radius
-    [number, number, number], // colour
-    number, // specular
-  ][],
+  scene: Sphere[],
 ): void => {
   const camera = new Camera(from, to, fov, width, height);
 
@@ -68,10 +58,10 @@ const render = (
 
       const ray = new Ray("primary", camera.from, direction);
 
-      let minHit: Hit = { object: [[0, 0, 0], 1, [0, 0, 0], 0], distance: 1e9 };
+      let minHit: Hit = { object: null, distance: 1e9 };
 
       scene.forEach((sphere) => {
-        const distance = Sphere.intersect(sphere, ray);
+        const distance = sphere.intersect(ray);
 
         // if it hits
         if (distance !== null) {
@@ -84,9 +74,9 @@ const render = (
         }
       });
 
-      if (minHit.distance !== 1e9) {
+      if (minHit.object !== null) {
         const hitPoint = Vec.add(ray.origin, Vec.mul(ray.direction, minHit.distance));
-        const normal = Sphere.normalAtPoint(minHit.object, hitPoint);
+        const normal = minHit.object.normalAtPoint(hitPoint);
 
         const [,,forward] = camera.getVectors();
 

@@ -1,11 +1,35 @@
 import { useEffect, useCallback, useState, useMemo } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, import/no-relative-packages
-import wasmInit, { rs_render as RSRender } from "../RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
+import wasmInit, { rs_render } from "../RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
 import Matrix44 from "../RayTracing/TypeScript/Matrix44";
+import { Sphere } from "../RayTracing/TypeScript/Objects";
 
 import TSRender from "../RayTracing/TypeScript/RayTracer";
 import Vec from "../RayTracing/TypeScript/Vector3";
+
+const RSRender = (
+  from: [number, number, number],
+  to: [number, number, number],
+  fov: number,
+  width: number,
+  height: number,
+  scene: Sphere[],
+): void => {
+  rs_render(
+    from,
+    to,
+    fov,
+    width,
+    height,
+    scene.map((object) => ([
+      object.position,
+      object.radius,
+      object.material.colour,
+      object.material.specular,
+    ])),
+  );
+};
 
 const HexToPixel = (hex: string): [number, number, number] => (
   [
@@ -21,12 +45,7 @@ type RayTracerOptions = {
   fov: number,
   width: number,
   height: number,
-  scene: [
-    [number, number, number], // center
-    number, // radius
-    [number, number, number], // colour
-    number, // specular
-  ][],
+  scene: Sphere[],
 };
 
 type Renderer = "rust" | "typescript";
@@ -42,23 +61,28 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
     fov: 90,
     width: 400,
     height: 300,
+    // scene: [
+    //   [[0, -3, 0], 2, [1, 0, 0], 10],
+    //   [[5, 0, 0], 1, [0, 0, 1], 500],
+    //   [[0, 0, 5], 1, [0, 1, 0], 500],
+    //   [[-1, 0, 2], 1, [1, 1, 1], 1000],
+    // ],
     scene: [
-      [[0, -3, 0], 2, [1, 0, 0], 10],
-      [[5, 0, 0], 1, [0, 0, 1], 500],
-      [[0, 0, 5], 1, [0, 1, 0], 500],
-      [[-1, 0, 2], 1, [1, 1, 1], 1000],
+      new Sphere([0, -3, 0], 2, { colour: [1, 0, 0], specular: 10 }),
+      new Sphere([5, 0, 0], 1, { colour: [0, 0, 1], specular: 500 }),
+      new Sphere([0, 0, 5], 1, { colour: [0, 1, 0], specular: 500 }),
+      new Sphere([-1, 0, 2], 1, { colour: [1, 1, 1], specular: 1000 }),
     ],
   });
 
   const spin = useCallback(() => {
     setOptions((_options) => ({
       ..._options,
-      scene: _options.scene.map((object) => [
-        Vec.transformPoint(object[0], Matrix44.createRotation("y", 0.1).values),
-        object[1],
-        object[2],
-        object[3],
-      ]),
+      scene: _options.scene.map((object) => new Sphere(
+        Vec.transformPoint(object.position, Matrix44.createRotation("y", 0.01).values),
+        object.radius,
+        object.material,
+      )),
     }));
     setTimeout(spin, 10);
   }, [setOptions]);
