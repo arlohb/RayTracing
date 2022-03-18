@@ -2,10 +2,10 @@ import { useEffect, useCallback, useState, useMemo } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, import/no-relative-packages
 import wasmInit, { rs_render as RSRender } from "../RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
+import Matrix44 from "../RayTracing/TypeScript/Matrix44";
 
-import Vec from "../RayTracing/TypeScript/Vector3";
 import TSRender from "../RayTracing/TypeScript/RayTracer";
-import { SphericalToCartesian } from "../RayTracing/TypeScript/SphericalCoords";
+import Vec from "../RayTracing/TypeScript/Vector3";
 
 const HexToPixel = (hex: string): [number, number, number] => (
   [
@@ -36,10 +36,6 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
   renderer: Renderer,
   setRollingFps: (newRollingFps: number[] | ((arg: number[]) => number[])) => void,
 }) => {
-  const [theta, setTheta] = useState(0);
-  const [phi, setPhi] = useState(-0.6);
-  const [orbitDistance, setOrbitDistance] = useState(10);
-
   const [options, setOptions] = useState<RayTracerOptions>({
     from: [5.77, 5.77, 5.77],
     to: [0, 0, 0],
@@ -53,6 +49,23 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
       [[-1, 0, 2], 1, [1, 1, 1], 1000],
     ],
   });
+
+  const spin = useCallback(() => {
+    setOptions((_options) => ({
+      ..._options,
+      scene: _options.scene.map((object) => [
+        Vec.transformPoint(object[0], Matrix44.createRotation("y", 0.1).values),
+        object[1],
+        object[2],
+        object[3],
+      ]),
+    }));
+    setTimeout(spin, 10);
+  }, [setOptions]);
+
+  useEffect(() => {
+    spin();
+  }, [spin]);
 
   const rayTracer = useMemo<typeof RSRender>(() => {
     if (renderer === "typescript") {
@@ -81,26 +94,12 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
   }, [rayTracer, options, setFps, setRollingFps]);
 
   useEffect(() => {
-    const position = Vec.mul(Vec.normalize(SphericalToCartesian(phi, theta)), orbitDistance);
-    setOptions((oldOptions) => ({ ...oldOptions, from: position }));
-  }, [theta, phi, orbitDistance]);
-
-  const spin = useCallback(() => {
-    setTheta((t) => t + 0.04);
-    setTimeout(spin, 10);
-  }, [setTheta]);
-
-  useEffect(() => {
-    spin();
-  }, [spin]);
-
-  useEffect(() => {
     wasmInit();
   }, []);
 
   useEffect(() => {
     draw();
-  }, [draw, theta, phi, orbitDistance]);
+  }, [draw]);
 
   return (
     <canvas
@@ -114,28 +113,6 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
       }}
       width={options.width}
       height={options.height}
-      onKeyPressCapture={({ key }) => {
-        const speed = 0.2;
-        const scrollSpeed = 1;
-
-        if (key === "w") {
-          setOrbitDistance(orbitDistance - scrollSpeed);
-          return;
-        } if (key === "s") {
-          setOrbitDistance(orbitDistance + scrollSpeed);
-          return;
-        }
-
-        if (key === "d") {
-          setTheta(theta + speed);
-        } else if (key === "a") {
-          setTheta(theta - speed);
-        } else if (key === "e") {
-          setPhi(phi + speed);
-        } else if (key === "q") {
-          setPhi(phi - speed);
-        }
-      }}
     />
   );
 };
