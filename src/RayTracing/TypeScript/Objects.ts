@@ -8,11 +8,11 @@ type Material = {
 };
 
 class Sphere {
-  position: [number, number, number];
+  position: Vec;
   radius: number;
   material: Material;
 
-  constructor(position: [number, number, number], radius: number, material: Material) {
+  constructor(position: Vec, radius: number, material: Material) {
     this.position = position;
     this.radius = radius;
     this.material = material;
@@ -20,11 +20,11 @@ class Sphere {
 
   public intersect(ray: Ray): number | null {
     // working out in whiteboard
-    const newOrigin = Vec.sub(ray.origin, this.position);
+    const newOrigin = ray.origin.sub(this.position);
 
     const a: number = 1;
-    const b: number = 2 * Vec.dot(ray.direction, newOrigin);
-    const c: number = Vec.dot(newOrigin, newOrigin) - (this.radius ** 2);
+    const b: number = 2 * ray.direction.dot(newOrigin);
+    const c: number = newOrigin.dot(newOrigin) - (this.radius ** 2);
 
     const solutions = SolveQuadratic(a, b, c);
 
@@ -38,10 +38,9 @@ class Sphere {
     return solutions[0] < solutions[1] ? solutions[0] : solutions[1];
   }
 
-  public normalAtPoint(point: [number, number, number]): [number, number, number] {
+  public normalAtPoint(point: Vec): Vec {
     // simple circle stuff
-    const normal = Vec.normalize(Vec.sub(point, this.position));
-    return normal;
+    return point.sub(this.position).normalize();
   }
 }
 

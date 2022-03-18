@@ -9,21 +9,21 @@ import TSRender from "../RayTracing/TypeScript/RayTracer";
 import Vec from "../RayTracing/TypeScript/Vector3";
 
 const RSRender = (
-  from: [number, number, number],
-  to: [number, number, number],
+  from: Vec,
+  to: Vec,
   fov: number,
   width: number,
   height: number,
   scene: Sphere[],
 ): void => {
   rs_render(
-    from,
-    to,
+    from.toTuple(),
+    to.toTuple(),
     fov,
     width,
     height,
     scene.map((object) => ([
-      object.position,
+      object.position.toTuple(),
       object.radius,
       object.material.colour,
       object.material.specular,
@@ -40,8 +40,8 @@ const HexToPixel = (hex: string): [number, number, number] => (
 );
 
 type RayTracerOptions = {
-  from: [number, number, number],
-  to: [number, number, number],
+  from: Vec,
+  to: Vec,
   fov: number,
   width: number,
   height: number,
@@ -56,22 +56,16 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
   setRollingFps: (newRollingFps: number[] | ((arg: number[]) => number[])) => void,
 }) => {
   const [options, setOptions] = useState<RayTracerOptions>({
-    from: [5.77, 5.77, 5.77],
-    to: [0, 0, 0],
+    from: new Vec(5.77, 5.77, 5.77),
+    to: new Vec(0, 0, 0),
     fov: 90,
     width: 400,
     height: 300,
-    // scene: [
-    //   [[0, -3, 0], 2, [1, 0, 0], 10],
-    //   [[5, 0, 0], 1, [0, 0, 1], 500],
-    //   [[0, 0, 5], 1, [0, 1, 0], 500],
-    //   [[-1, 0, 2], 1, [1, 1, 1], 1000],
-    // ],
     scene: [
-      new Sphere([0, -3, 0], 2, { colour: [1, 0, 0], specular: 10 }),
-      new Sphere([5, 0, 0], 1, { colour: [0, 0, 1], specular: 500 }),
-      new Sphere([0, 0, 5], 1, { colour: [0, 1, 0], specular: 500 }),
-      new Sphere([-1, 0, 2], 1, { colour: [1, 1, 1], specular: 1000 }),
+      new Sphere(new Vec(0, -3, 0), 2, { colour: [1, 0, 0], specular: 10 }),
+      new Sphere(new Vec(5, 0, 0), 1, { colour: [0, 0, 1], specular: 500 }),
+      new Sphere(new Vec(0, 0, 5), 1, { colour: [0, 1, 0], specular: 500 }),
+      new Sphere(new Vec(-1, 0, 2), 1, { colour: [1, 1, 1], specular: 1000 }),
     ],
   });
 
@@ -79,7 +73,7 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
     setOptions((_options) => ({
       ..._options,
       scene: _options.scene.map((object) => new Sphere(
-        Vec.transformPoint(object.position, Matrix44.createRotation("y", 0.01).values),
+        object.position.transformPoint(Matrix44.createRotation("y", 0.01).values),
         object.radius,
         object.material,
       )),

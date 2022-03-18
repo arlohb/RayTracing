@@ -15,8 +15,8 @@ type Hit = {
 };
 
 const render = (
-  from: [number, number, number],
-  to: [number, number, number],
+  from: Vec,
+  to: Vec,
   fov: number,
   width: number,
   height: number,
@@ -27,13 +27,10 @@ const render = (
   const imagePlane = camera.createImagePlane();
 
   // working for this is in whiteboard
-  const topLeftPoint = Vec.sub(
-    Vec.add(imagePlane.left, imagePlane.top),
-    imagePlane.center,
-  );
+  const topLeftPoint = imagePlane.left.add(imagePlane.top).sub(imagePlane.center);
 
-  const widthWorldSpace = Vec.length(Vec.sub(imagePlane.right, imagePlane.left));
-  const heightWorldSpace = Vec.length(Vec.sub(imagePlane.top, imagePlane.bottom));
+  const widthWorldSpace = imagePlane.right.sub(imagePlane.left).length();
+  const heightWorldSpace = imagePlane.top.sub(imagePlane.bottom).length();
   const [right, up] = camera.getVectors();
 
   const image: [number, number, number][][] = Array.from({ length: width }, () => (Array<[number, number, number]>(height).fill(HexToPixel("#09c7b7"))));
@@ -48,13 +45,13 @@ const render = (
         y: (y + 0.5) / height,
       };
 
-      const xOffset = Vec.mul(right, pixelScreenSpace.x * widthWorldSpace);
+      const xOffset = right.mul(pixelScreenSpace.x * widthWorldSpace);
       // mul -1 because it's offset down
-      const yOffset = Vec.mul(Vec.mul(up, -1), pixelScreenSpace.y * heightWorldSpace);
+      const yOffset = up.mul(-1).mul(pixelScreenSpace.y * heightWorldSpace);
 
-      const pixelWorldSpace = Vec.add(topLeftPoint, Vec.add(xOffset, yOffset));
+      const pixelWorldSpace = topLeftPoint.add(xOffset.add(yOffset));
 
-      const direction = Vec.normalize(Vec.sub(pixelWorldSpace, camera.from));
+      const direction = pixelWorldSpace.sub(camera.from).normalize();
 
       const ray = new Ray("primary", camera.from, direction);
 
@@ -75,13 +72,13 @@ const render = (
       });
 
       if (minHit.object !== null) {
-        const hitPoint = Vec.add(ray.origin, Vec.mul(ray.direction, minHit.distance));
+        const hitPoint = ray.origin.add(ray.direction.mul(minHit.distance));
         const normal = minHit.object.normalAtPoint(hitPoint);
 
         const [,,forward] = camera.getVectors();
 
         // normal length can be left out as it will always be 1
-        const angle = Math.acos((Vec.dot(forward, normal)) / Vec.length(forward));
+        const angle = Math.acos((forward.dot(normal)) / forward.length());
 
         if (angle < minAngle) minAngle = angle;
         if (angle > maxAngle) maxAngle = angle;

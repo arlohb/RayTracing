@@ -3,16 +3,16 @@ import Vec from "./Vector3";
 
 // these are the centers of each edge
 type ImagePlane = {
-  left: [number, number, number],
-  right: [number, number, number],
-  bottom: [number, number, number],
-  top: [number, number, number],
-  center: [number, number, number],
+  left: Vec,
+  right: Vec,
+  bottom: Vec,
+  top: Vec,
+  center: Vec,
 };
 
 class Camera {
-  from: [number, number, number];
-  to: [number, number, number];
+  from: Vec;
+  to: Vec;
   fov: number;
   width: number;
   height: number;
@@ -22,7 +22,7 @@ class Camera {
     return Matrix44.createFromVector3(right, up, forward, this.from);
   }
 
-  constructor(from: [number, number, number], to: [number, number, number], fov: number, width: number, height: number) {
+  constructor(from: Vec, to: Vec, fov: number, width: number, height: number) {
     this.from = from;
     this.to = to;
     this.fov = fov;
@@ -30,13 +30,13 @@ class Camera {
     this.height = height;
   }
 
-  getVectors(): [[number, number, number], [number, number, number], [number, number, number]] {
-    const forward = Vec.normalize(Vec.sub(this.from, this.to));
+  getVectors(): [Vec, Vec, Vec] {
+    const forward = this.from.sub(this.to).normalize();
 
-    const temp: [number, number, number] = [0, 1, 0];
-    const right = Vec.normalize(Vec.cross(Vec.normalize(temp), forward));
+    const temp: Vec = new Vec(0, 1, 0);
+    const right = temp.normalize().cross(forward).normalize();
 
-    const up = Vec.normalize(Vec.cross(forward, right));
+    const up = forward.cross(right).normalize();
 
     return [right, up, forward];
   }
@@ -54,13 +54,13 @@ class Camera {
 
     // the image plane is 1 unit away from the camera
     // this is - not + because the camera point in the -forward direction
-    const center = Vec.add(this.from, Vec.mul(forward, -1));
+    const center = this.from.add(forward.mul(-1));
 
     const imagePlane: ImagePlane = {
-      left: Vec.sub(center, Vec.mul(right, halfWidth)),
-      right: Vec.add(center, Vec.mul(right, halfWidth)),
-      bottom: Vec.sub(center, Vec.mul(up, halfHeight)),
-      top: Vec.add(center, Vec.mul(up, halfHeight)),
+      left: center.sub(right.mul(halfWidth)),
+      right: center.add(right.mul(halfWidth)),
+      bottom: center.sub(up.mul(halfHeight)),
+      top: center.add(up.mul(halfHeight)),
       center,
     };
 
