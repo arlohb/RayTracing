@@ -1,35 +1,12 @@
 import { useEffect, useCallback, useState, useMemo } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, import/no-relative-packages
-import wasmInit, { rs_render } from "../RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
+import wasmInit, { rs_render as RSRender } from "../RayTracing/rs-ray-tracing/pkg/rs_ray_tracing";
 import Matrix44 from "../RayTracing/TypeScript/Matrix44";
 import { Sphere } from "../RayTracing/TypeScript/Objects";
 
 import TSRender from "../RayTracing/TypeScript/RayTracer";
 import Vec from "../RayTracing/TypeScript/Vector3";
-
-const RSRender = (
-  from: Vec,
-  to: Vec,
-  fov: number,
-  width: number,
-  height: number,
-  scene: Sphere[],
-): void => {
-  rs_render(
-    from.toTuple(),
-    to.toTuple(),
-    fov,
-    width,
-    height,
-    scene.map((object) => ([
-      object.position.toTuple(),
-      object.radius,
-      object.material.colour,
-      object.material.specular,
-    ])),
-  );
-};
 
 const HexToPixel = (hex: string): [number, number, number] => (
   [
@@ -73,7 +50,7 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
     setOptions((_options) => ({
       ..._options,
       scene: _options.scene.map((object) => new Sphere(
-        object.position.transformPoint(Matrix44.createRotation("y", 0.01).values),
+        object.center.transformPoint(Matrix44.createRotation("y", 0.01).values),
         object.radius,
         object.material,
       )),

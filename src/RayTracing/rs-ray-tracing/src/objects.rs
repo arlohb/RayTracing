@@ -1,14 +1,16 @@
+use serde::{Serialize, Deserialize};
+
 use crate::vec3::Vec3;
 use crate::ray::Ray;
 pub use crate::solver::solve_quadratic;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Material {
   pub colour: (f64, f64, f64),
   pub specular: f64,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Sphere {
   pub center: Vec3,
   pub radius: f64,

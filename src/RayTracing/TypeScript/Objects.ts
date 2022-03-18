@@ -8,19 +8,19 @@ type Material = {
 };
 
 class Sphere {
-  position: Vec;
+  center: Vec;
   radius: number;
   material: Material;
 
   constructor(position: Vec, radius: number, material: Material) {
-    this.position = position;
+    this.center = position;
     this.radius = radius;
     this.material = material;
   }
 
   public intersect(ray: Ray): number | null {
     // working out in whiteboard
-    const newOrigin = ray.origin.sub(this.position);
+    const newOrigin = ray.origin.sub(this.center);
 
     const a: number = 1;
     const b: number = 2 * ray.direction.dot(newOrigin);
@@ -40,7 +40,7 @@ class Sphere {
 
   public normalAtPoint(point: Vec): Vec {
     // simple circle stuff
-    return point.sub(this.position).normalize();
+    return point.sub(this.center).normalize();
   }
 }
 

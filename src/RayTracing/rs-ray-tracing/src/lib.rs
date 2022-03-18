@@ -236,43 +236,22 @@ impl RayTracer {
 
 #[wasm_bindgen]
 pub fn rs_render(
-    from: JsValue, // (f64, f64, f64),
-    to: JsValue, // (f64, f64, f64),
+    from: JsValue, // Vec3
+    to: JsValue, // Vec3
     fov: f64,
     width: u32,
     height: u32,
-    scene: JsValue, // Vec<((f64, f64, f64), f64, (f64, f64, f64), f64)>,
+    scene: JsValue, // Vec<Sphere>
 ) -> Result<(), JsValue> {
     let ray_tracer = RayTracer {
-        from: {
-            let from: (f64, f64, f64) = serde_wasm_bindgen::from_value(from)?;
-            Vec3 { x: from.0, y: from.1, z: from.2 }
-        },
-        to: {
-            let to: (f64, f64, f64) = serde_wasm_bindgen::from_value(to)?;
-            Vec3 { x: to.0, y: to.1, z: to.2 }
-        },
+        from: from.into_serde().unwrap(),
+        to: to.into_serde().unwrap(),
         fov,
         width,
         height,
-        scene: {
-            let scene: Vec<((f64, f64, f64), f64, (f64, f64, f64), f64)> = serde_wasm_bindgen::from_value(scene)?;
-
+        scene: 
             (
-                {
-                    let mut objects: Vec<Sphere> = vec![];
-                    for object in scene {
-                        objects.push(Sphere {
-                            center: Vec3 { x: object.0.0, y: object.0.1, z: object.0.2 },
-                            radius: object.1,
-                            material: Material {
-                                colour: object.2,
-                                specular: object.3,
-                            }
-                        });
-                    }
-                    objects
-                },
+                scene.into_serde::<Vec<Sphere>>().unwrap(),
                 vec![
                     // Box::new(PointLight {
                     //     position: Vec3 { x: 0., y: 2., z: 0. },
@@ -283,8 +262,7 @@ pub fn rs_render(
                         intensity: (0.8, 0.8, 0.8),
                     })
                 ]
-            )
-        }
+            ),
     };
     ray_tracer.rs_render()
 }
@@ -295,16 +273,11 @@ const _TS: &str = r#"
 export function greet(): void;
 export function pass_value_to_js(): [string, number];
 export function rs_render(
-    from: [number, number, number],
-    to: [number, number, number],
+    from: Vec,
+    to: Vec,
     fov: number,
     width: number,
     height: number,
-    scene: [
-        [number, number, number], // center
-        number, // radius
-        [number, number, number], // colour
-        number, // specular
-    ][],
+    scene: Sphere[],
 ): void
 "#;
