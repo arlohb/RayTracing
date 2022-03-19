@@ -46,35 +46,23 @@ impl Sphere {
   }
 }
 
-pub trait LightData {
-  fn intensity(&self, point: Vec3) -> (f64, f64, f64);
-  fn direction(&self, point: Vec3) -> Vec3;
+pub enum Light {
+  Direction { intensity: (f64, f64, f64), direction: Vec3},
+  Point { intensity: (f64, f64, f64), position: Vec3},
 }
 
-pub struct PointLight {
-  pub position: Vec3,
-  pub intensity: (f64, f64, f64),
-}
-
-impl LightData for PointLight {
-  fn intensity(&self, _: Vec3) -> (f64, f64, f64) {
-    self.intensity
+impl Light {
+  pub fn intensity(&self, point: Vec3) -> (f64, f64, f64) {
+    match self {
+      Light::Direction { intensity, direction } => *intensity,
+      Light::Point { intensity, position } => *intensity,
+    }
   }
-  fn direction(&self, point: Vec3) -> Vec3 {
-    self.position - point
-  }
-}
 
-pub struct DirectionLight {
-  pub intensity: (f64, f64, f64),
-  pub direction: Vec3,
-}
-
-impl LightData for DirectionLight {
-  fn intensity(&self, _: Vec3) -> (f64, f64, f64) {
-    self.intensity
-  }
-  fn direction(&self, _: Vec3) -> Vec3 {
-    self.direction
+  pub fn direction(&self, point: Vec3) -> Vec3 {
+    match self {
+      Light::Direction { intensity, direction } => *direction,
+      Light::Point { intensity, position } => *position - point,
+    }
   }
 }

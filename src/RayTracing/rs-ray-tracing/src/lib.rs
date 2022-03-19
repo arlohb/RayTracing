@@ -13,7 +13,7 @@ mod ray;
 pub use crate::ray::Ray;
 
 mod objects;
-pub use crate::objects::{Sphere, LightData, PointLight, DirectionLight};
+pub use crate::objects::{Sphere, Light};
 
 mod solver;
 
@@ -57,7 +57,7 @@ struct RayTracer {
     pub fov: f64,
     pub width: u32,
     pub height: u32,
-    pub scene: (Vec<Sphere>, Vec<Box<dyn LightData>>),
+    pub scene: (Vec<Sphere>, Vec<Light>),
 }
 
 impl RayTracer {
@@ -257,10 +257,10 @@ pub fn rs_render(
                     //     position: Vec3 { x: 0., y: 2., z: 0. },
                     //     intensity: (0.6, 0.6, 0.6),
                     // }),
-                    Box::new(DirectionLight {
-                        direction: (Vec3 { x: -1., y: 1.5, z: -0.5 }).normalize(),
+                    Light::Direction {
                         intensity: (0.8, 0.8, 0.8),
-                    })
+                        direction: (Vec3 { x: -1., y: 1.5, z: -0.5 }).normalize(),
+                    },
                 ]
             ),
     };
