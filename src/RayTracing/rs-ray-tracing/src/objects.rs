@@ -52,17 +52,17 @@ pub enum Light {
 }
 
 impl Light {
-  pub fn intensity(&self, point: Vec3) -> (f64, f64, f64) {
+  pub fn intensity(&self, _point: Vec3) -> (f64, f64, f64) {
     match self {
-      Light::Direction { intensity, direction } => *intensity,
-      Light::Point { intensity, position } => *intensity,
+      Light::Direction { intensity, direction: _ } => *intensity,
+      Light::Point { intensity, position: _ } => *intensity,
     }
   }
 
   pub fn direction(&self, point: Vec3) -> Vec3 {
     match self {
-      Light::Direction { intensity, direction } => *direction,
-      Light::Point { intensity, position } => *position - point,
+      Light::Direction { intensity: _, direction } => *direction,
+      Light::Point { intensity: _, position } => *position - point,
     }
   }
 }
