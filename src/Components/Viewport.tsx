@@ -99,10 +99,7 @@ const Viewport = ({ setFps, renderer, setRollingFps }: {
   return (
     <canvas
       id="canvas"
-      tabIndex={0}
-      onClick={draw}
       style={{
-        userSelect: "none", // allows the user to double click without selecting everything
         width: options.width,
         height: options.height,
       }}
